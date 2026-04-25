@@ -1,0 +1,15 @@
+{
+  "name": "operator-tecoman-02",
+  "walletId": "${OPERATOR5_WALLET_ID}",
+  "location": { "lat": 18.91, "lon": -103.88 },
+  "dataTypes": [
+    "weather.temperature_c",
+    "weather.humidity_pct",
+    "weather.precipitation_mm_h",
+    "weather.wind_ms"
+  ],
+  "ratePerQuery": 200,
+  "accuracy": { "noiseStddev": 0.3, "biasOffset": 0 },
+  "port": 3005,
+  "adminEnabled": true
+}

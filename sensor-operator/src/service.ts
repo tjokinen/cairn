@@ -1,0 +1,228 @@
+import 'dotenv/config';
+import express from 'express';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { paymentMiddleware, x402ResourceServer } from '@x402/express';
+import { ExactEvmScheme }      from '@x402/evm/exact/server';
+import { HTTPFacilitatorClient } from '@x402/core/server';
+
+import { loadConfig }           from './config.js';
+import { loadState, saveState } from './state.js';
+import { RegistryClient }       from './registry.js';
+import { ReadingSigner }        from './signer.js';
+import { OpenWeatherMapSource } from './sources/openweathermap.js';
+import { SyntheticSource }      from './sources/synthetic.js';
+import { loadDeployments }      from '@cairn/common';
+import type { OperatorState }   from './state.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT  = resolve(__dirname, '..', '..');
+
+// ── Bootstrap ────────────────────────────────────────────────────────────────
+
+async function main() {
+  const configPath = process.argv[2];
+  if (!configPath) {
+    console.error('Usage: tsx src/service.ts <config-path>');
+    process.exit(1);
+  }
+
+  const config      = loadConfig(configPath);
+  const deployments = loadDeployments(REPO_ROOT);
+  const statePath   = resolve(__dirname, '..', 'state', `${config.name}.json`);
+  let state: OperatorState = loadState(statePath);
+
+  console.log(`\n=== Cairn Sensor Operator: ${config.name} ===`);
+  console.log(`  Port:      ${config.port}`);
+  console.log(`  DataTypes: ${config.dataTypes.join(', ')}`);
+  console.log(`  Rate:      ${config.ratePerQuery} USDC units ($${(config.ratePerQuery / 1e6).toFixed(6)})`);
+
+  // ── Get wallet address ────────────────────────────────────────────────────
+  const registry = new RegistryClient(deployments);
+  const walletAddress = await registry.getWalletAddress(config.walletId);
+  console.log(`  Wallet:    ${walletAddress}`);
+
+  // ── Register on-chain (idempotent) ────────────────────────────────────────
+  if (state.sensorId == null) {
+    console.log('\nRegistering sensor on-chain...');
+    await registry.ensureApproval(config.walletId);
+    const sensorId = await registry.register(config.walletId, config);
+    state = { sensorId, registeredAt: Math.floor(Date.now() / 1000), totalEarnings: 0 };
+    saveState(statePath, state);
+    console.log(`  ✓ Registered as sensorId = ${sensorId}`);
+  } else {
+    console.log(`\nAlready registered as sensorId = ${state.sensorId}`);
+  }
+
+  const sensorId = state.sensorId!;
+  const signer   = new ReadingSigner();
+
+  // ── Data sources ──────────────────────────────────────────────────────────
+  const owm = new OpenWeatherMapSource(
+    config.location.lat,
+    config.location.lon,
+    config.accuracy.noiseStddev,
+  );
+  const synthetic = new SyntheticSource();
+  owm.start();
+
+  let biasOffset = config.accuracy.biasOffset;
+
+  function getValue(dataType: string): number | null {
+    if (owm.supports(dataType))       return owm.getValue(dataType);
+    if (synthetic.supports(dataType)) return synthetic.getValue(dataType);
+    return null;
+  }
+
+  function getUnit(dataType: string): string {
+    const units: Record<string, string> = {
+      'weather.temperature_c':       'degC',
+      'weather.humidity_pct':        'pct',
+      'weather.precipitation_mm_h':  'mm/h',
+      'weather.wind_ms':             'm/s',
+      'air.pm25_ugm3':               'ug/m3',
+      'air.pm10_ugm3':               'ug/m3',
+      'seismic.velocity_mms':        'mm/s',
+      'radiation.dose_usvh':         'uSv/h',
+    };
+    return units[dataType] ?? 'unknown';
+  }
+
+  // ── x402 resource server ──────────────────────────────────────────────────
+  const facilitatorUrl = process.env.X402_FACILITATOR_URL ?? 'https://facilitator.x402.org';
+  const facilitator    = new HTTPFacilitatorClient({ url: facilitatorUrl });
+
+  const evmScheme = new ExactEvmScheme();
+  // Arc testnet (5042002) is not in x402/evm's built-in list — register a custom parser.
+  evmScheme.registerMoneyParser(async (amountDecimal, network) => {
+    if (network !== `eip155:${deployments.arcChainId}`) return null;
+    const smallestUnits = Math.round(amountDecimal * 1_000_000).toString();
+    return {
+      amount: smallestUnits,
+      asset:  process.env.USDC_ADDRESS ?? '0x3600000000000000000000000000000000000000',
+    };
+  });
+
+  const resourceServer = new x402ResourceServer(facilitator)
+    .register(`eip155:${deployments.arcChainId}`, evmScheme);
+
+  const priceUSD = `$${(config.ratePerQuery / 1_000_000).toFixed(7)}`;
+
+  // ── Express app ───────────────────────────────────────────────────────────
+  const app = express();
+  app.use(express.json());
+
+  // GET /info — public
+  app.get('/info', (_req, res) => {
+    res.json({
+      name:         config.name,
+      sensorId,
+      location:     config.location,
+      dataTypes:    config.dataTypes,
+      ratePerQuery: config.ratePerQuery,
+      walletAddress,
+      active:       true,
+    });
+  });
+
+  // GET /earnings — public
+  app.get('/earnings', (_req, res) => {
+    res.json({
+      totalEarnings:      state.totalEarnings,
+      totalEarningsUSDC:  (state.totalEarnings / 1e6).toFixed(6),
+    });
+  });
+
+  // POST /admin/set-bias — only when adminEnabled
+  app.post('/admin/set-bias', (req, res) => {
+    if (!config.adminEnabled) {
+      res.status(403).json({ error: 'Admin endpoints not enabled for this operator' });
+      return;
+    }
+    const { offset } = req.body as { offset?: number };
+    if (typeof offset !== 'number') {
+      res.status(400).json({ error: 'offset must be a number' });
+      return;
+    }
+    biasOffset = offset;
+    owm.setBiasOffset(offset);
+    console.log(`[ADMIN] Bias offset set to ${offset} for ${config.name}`);
+    res.json({ ok: true, biasOffset });
+  });
+
+  // GET /query — x402-protected
+  app.use(
+    paymentMiddleware(
+      {
+        'GET /query': {
+          accepts: {
+            scheme:  'exact',
+            price:   priceUSD,
+            network: `eip155:${deployments.arcChainId}`,
+            payTo:   walletAddress,
+            // EIP-712 domain params for Arc USDC — required for local facilitator signing
+            extra:   { name: 'USD Coin', version: '2' },
+          },
+          description: `Sensor reading from ${config.name}`,
+        },
+      },
+      resourceServer,
+    ),
+  );
+
+  app.get('/query', async (req, res) => {
+    const dataType = req.query['type'] as string;
+
+    if (!dataType) {
+      res.status(400).json({ error: 'Missing ?type=<dataType>' });
+      return;
+    }
+    if (!config.dataTypes.includes(dataType)) {
+      res.status(404).json({ error: `Data type ${dataType} not supported by this operator` });
+      return;
+    }
+
+    const value = getValue(dataType);
+    if (value === null) {
+      res.status(503).json({ error: 'No data available yet — sensor still initializing' });
+      return;
+    }
+
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    try {
+      const signature = await signer.sign(config.walletId, sensorId, value, timestamp);
+
+      // Track earnings
+      state.totalEarnings += config.ratePerQuery;
+      saveState(statePath, state);
+
+      res.json({
+        sensorId,
+        dataType,
+        value,
+        unit:      getUnit(dataType),
+        timestamp,
+        signature,
+      });
+    } catch (err) {
+      console.error('Failed to sign reading:', err);
+      res.status(500).json({ error: 'Signing failed' });
+    }
+  });
+
+  app.listen(config.port, () => {
+    console.log(`\n✓ ${config.name} listening on port ${config.port}`);
+    console.log(`  /info     → public`);
+    console.log(`  /query    → x402-protected (${priceUSD} per query)`);
+    console.log(`  /earnings → public`);
+    if (config.adminEnabled) {
+      console.log(`  /admin/set-bias → enabled`);
+    }
+  });
+}
+
+main().catch((err) => {
+  console.error('Startup failed:', err);
+  process.exit(1);
+});

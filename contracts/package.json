@@ -1,0 +1,15 @@
+{
+  "name": "@cairn/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "forge build",
+    "postbuild": "node scripts/copy-abis.js",
+    "test": "forge test -vv",
+    "clean": "forge clean"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "^5.2.0"
+  }
+}

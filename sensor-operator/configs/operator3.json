@@ -1,0 +1,15 @@
+{
+  "name": "operator-manzanillo",
+  "walletId": "${OPERATOR3_WALLET_ID}",
+  "location": { "lat": 19.11, "lon": -104.34 },
+  "dataTypes": [
+    "weather.temperature_c",
+    "weather.humidity_pct",
+    "weather.precipitation_mm_h",
+    "weather.wind_ms"
+  ],
+  "ratePerQuery": 240,
+  "accuracy": { "noiseStddev": 0.3, "biasOffset": 0 },
+  "port": 3003,
+  "adminEnabled": false
+}

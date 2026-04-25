@@ -1,0 +1,15 @@
+{
+  "name": "operator-colima",
+  "walletId": "${OPERATOR2_WALLET_ID}",
+  "location": { "lat": 19.24, "lon": -103.72 },
+  "dataTypes": [
+    "weather.temperature_c",
+    "weather.humidity_pct",
+    "weather.precipitation_mm_h",
+    "weather.wind_ms"
+  ],
+  "ratePerQuery": 200,
+  "accuracy": { "noiseStddev": 0.5, "biasOffset": 0 },
+  "port": 3002,
+  "adminEnabled": false
+}

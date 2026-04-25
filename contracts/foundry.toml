@@ -1,0 +1,11 @@
+[profile.default]
+src = "src"
+out = "out"
+test = "test"
+libs = ["/Volumes/ADATASE760/Repos/cairn/node_modules", "lib"]
+remappings = [
+    "@openzeppelin/=../node_modules/@openzeppelin/",
+]
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 200

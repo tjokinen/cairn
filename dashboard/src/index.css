@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-surface text-gray-100 font-mono;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar        { width: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #2d3748; border-radius: 2px; }
+
+.panel { @apply bg-panel border border-border rounded-lg overflow-hidden; }
+.panel-header { @apply px-3 py-2 border-b border-border text-xs font-semibold uppercase tracking-widest text-gray-400 flex items-center justify-between; }
+.counter-badge { @apply text-xs px-2 py-0.5 rounded bg-border text-gray-300; }
+.rep-green  { color: #34d399; }
+.rep-yellow { color: #fbbf24; }
+.rep-red    { color: #f87171; }

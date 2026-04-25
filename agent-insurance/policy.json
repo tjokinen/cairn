@@ -1,0 +1,10 @@
+{
+  "policyId": "policy-001",
+  "policyholder": "${POLICYHOLDER_ADDRESS}",
+  "coverageLocation": { "lat": 18.9, "lon": -103.87 },
+  "dataType": "weather.temperature_c",
+  "breachCondition": { "op": ">", "threshold": 32, "consecutiveReadings": 3 },
+  "coverageAmountUSDC": "10000000",
+  "premiumRatePerSecond": "100",
+  "durationSeconds": 3600
+}

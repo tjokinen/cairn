@@ -1,0 +1,29 @@
+{
+  "name": "cairn",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "common",
+    "contracts",
+    "sensor-operator",
+    "aggregator",
+    "agent-insurance",
+    "dashboard-backend",
+    "dashboard",
+    "scripts"
+  ],
+  "scripts": {
+    "bootstrap": "tsx scripts/bootstrap.ts",
+    "demo:honest": "tsx scripts/demo-honest.ts",
+    "demo:adversarial": "tsx scripts/demo-adversarial.ts",
+    "demo:reset": "tsx scripts/demo-reset.ts",
+    "demo:record": "tsx scripts/demo-record.ts",
+    "demo:replay": "tsx scripts/demo-replay.ts",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
