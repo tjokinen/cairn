@@ -4,7 +4,7 @@ Nanopayment oracle protocol for community-operated sensor networks. Built for th
 
 Sensor operators register data feeds, post a USDC stake, and serve readings via [x402](https://x402.org) endpoints. Customer agents — parametric insurance contracts, climate risk monitors, automated research agents — discover and purchase verified readings per-query, settled as USDC nanopayments on Arc.
 
-**[Live demo →](https://cairn-dashboard.vercel.app)**  *(scripted replay, no live sensors required)*
+**[Live demo →](https://cairn-aggregator-ima8k3zxg-tjokinens-projects.vercel.app/)**  *(scripted replay, no live sensors required)*
 
 ---
 
