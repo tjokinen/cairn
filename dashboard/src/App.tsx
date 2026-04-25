@@ -109,12 +109,12 @@ export default function App() {
         }}
       >
         {/* Panel A — Sensor map, full height */}
-        <div style={{ gridRow: hasSlash ? '1 / span 2' : '1' }}>
+        <div className="min-h-0 overflow-hidden" style={{ gridRow: hasSlash ? '1 / span 2' : '1' }}>
           <PanelA sensors={state.sensors} />
         </div>
 
         {/* Panel B — Transaction stream, full height */}
-        <div style={{ gridRow: hasSlash ? '1 / span 2' : '1' }}>
+        <div className="min-h-0 overflow-hidden" style={{ gridRow: hasSlash ? '1 / span 2' : '1' }}>
           <PanelB
             events={state.txEvents}
             totalTxCount={state.totalTxCount}
@@ -125,13 +125,13 @@ export default function App() {
         </div>
 
         {/* Panel C — Active policy (top-right) */}
-        <div>
+        <div className="min-h-0 overflow-hidden">
           <PanelC policy={state.policy} />
         </div>
 
         {/* Panel D — Slashing feed (bottom-right, only when slash occurred) */}
         {hasSlash && (
-          <div>
+          <div className="min-h-0 overflow-hidden">
             <PanelD slashEvents={state.slashEvents} sensors={state.sensors} />
           </div>
         )}

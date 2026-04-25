@@ -34,7 +34,7 @@ interface RawPayload {
 }
 
 export class LocalFacilitatorClient implements FacilitatorClient {
-  private usdcName    = 'USD Coin';
+  private usdcName    = 'USDC';
   private usdcVersion = '2';
 
   constructor(
@@ -53,7 +53,7 @@ export class LocalFacilitatorClient implements FacilitatorClient {
       [this.usdcName, this.usdcVersion] = await Promise.all([usdc.name(), usdc.version()]);
       console.log(`  Facilitator: USDC "${this.usdcName}" v${this.usdcVersion}`);
     } catch {
-      console.warn('  Facilitator: using default USDC name/version ("USD Coin" / "2")');
+      console.warn('  Facilitator: using default USDC name/version ("USDC" / "2")');
     }
   }
 

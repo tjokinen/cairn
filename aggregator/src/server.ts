@@ -22,23 +22,24 @@ import type { QueryContext, SensorReading } from './types.js';
 
 const PROTOCOL_FEE_BPS = 200; // 2%
 
-function makeCircleClientSigner(
-  walletId: string,
-  address: `0x${string}`,
-  circle: ReturnType<typeof import('@circle-fin/developer-controlled-wallets').initiateDeveloperControlledWalletsClient>,
-): BatchEvmSigner {
+function makePaymentSigner(): BatchEvmSigner {
+  // Circle's signTypedData API does not support Arc EIP-712 signing.
+  // Use a local EOA wallet (DEPLOYER_PRIVATE_KEY) for x402 payment authorization.
+  const wallet = new ethers.Wallet(process.env['DEPLOYER_PRIVATE_KEY']!);
   return {
-    address,
+    address: wallet.address as `0x${string}`,
     async signTypedData(data: {
       domain:      Record<string, unknown>;
       types:       Record<string, unknown>;
       primaryType: string;
       message:     Record<string, unknown>;
     }) {
-      const res = await circle.signTypedData({ walletId, data: JSON.stringify(data) });
-      const sig = res.data?.signature;
-      if (!sig) throw new Error('signTypedData: no signature from Circle');
-      return sig as `0x${string}`;
+      const { EIP712Domain: _, ...types } = data.types as Record<string, ethers.TypedDataField[]>;
+      return wallet.signTypedData(
+        data.domain as ethers.TypedDataDomain,
+        types,
+        data.message,
+      ) as Promise<`0x${string}`>;
     },
   } as BatchEvmSigner;
 }
@@ -60,7 +61,8 @@ function buildGatewayFacilitatorClient(gatewayUrl: string): FacilitatorClient {
       ) as unknown as Promise<SettleResponse>;
     },
     async getSupported() {
-      return gatewayFacilitator.getSupported() as unknown as ReturnType<FacilitatorClient['getSupported']>;
+      // Circle Gateway does not expose a getSupported endpoint; return static capabilities.
+      return { kinds: [{ x402Version: 2, scheme: 'exact', network: `eip155:${process.env.ARC_CHAIN_ID ?? '5042002'}` }], extensions: [], signers: {} } as unknown as ReturnType<FacilitatorClient['getSupported']>;
     },
   };
 }
@@ -236,7 +238,7 @@ export function buildServer(
   const defaultGatewayUrl = 'https://gateway-api-testnet.circle.com/gateway';
   const gatewayUrl = (process.env.CIRCLE_GATEWAY_URL?.trim() || defaultGatewayUrl).replace(/\/+$/, '');
 
-  const clientSigner = makeCircleClientSigner(aggregatorWalletId, aggregatorAddress as `0x${string}`, chain.circle);
+  const clientSigner = makePaymentSigner();
   const evmClientScheme = new CompositeEvmScheme(
     new BatchEvmScheme(clientSigner),
     new ExactEvmSchemeClient(clientSigner),
@@ -248,11 +250,9 @@ export function buildServer(
     return { amount: Math.round(amountDecimal * 1_000_000).toString(), asset: usdcAddress };
   });
 
-  const facilitatorClients: FacilitatorClient[] = [
-    buildGatewayFacilitatorClient(gatewayUrl),
-    facilitator,
-  ];
-  const resourceServer = new x402ResourceServer(facilitatorClients).register(arcNetwork, evmServerScheme);
+  // Only the local Arc facilitator can verify Arc EIP-3009 payments.
+  // Circle Gateway is used only for client-side batched payment creation, not server-side verification.
+  const resourceServer = new x402ResourceServer([facilitator]).register(arcNetwork, evmServerScheme);
 
   const app = express();
   app.use(express.json());
@@ -291,7 +291,7 @@ export function buildServer(
         network: arcNetwork,
         payTo:   aggregatorAddress,
         price:   dynamicPrice,
-        extra:   { name: 'USD Coin', version: '2' },
+        extra:   { name: 'USDC', version: '2' },
       },
       description: 'Verified environmental reading from the Cairn oracle network',
     },

@@ -23,6 +23,8 @@ export class DiscoveryService {
   private sensors = new Map<number, SensorInfo>();
   private provider: ethers.JsonRpcProvider;
   private registry: ethers.Contract;
+  private pollTimer: ReturnType<typeof setInterval> | null = null;
+  private lastBlock = 0;
 
   constructor(private deployments: Deployments) {
     this.provider = new ethers.JsonRpcProvider(deployments.arcRpc, deployments.arcChainId);
@@ -37,17 +39,54 @@ export class DiscoveryService {
     const count = Number(await this.registry.sensorCount());
     await Promise.all(Array.from({ length: count }, (_, i) => this.loadSensor(i + 1)));
 
-    this.registry.on('SensorRegistered', (id: bigint) => { void this.loadSensor(Number(id)); });
-    this.registry.on('SensorDeactivated', (id: bigint) => {
-      const s = this.sensors.get(Number(id));
-      if (s) s.active = false;
-    });
-    this.registry.on('ReputationUpdated', (id: bigint, newRep: bigint) => {
-      const s = this.sensors.get(Number(id));
-      if (s) s.reputation = newRep;
-    });
+    // Arc doesn't support stateful filters (eth_newFilter), so we poll with queryFilter.
+    this.lastBlock = await this.provider.getBlockNumber();
+    this.pollTimer = setInterval(() => void this.pollEvents(), 5_000);
 
     console.log(`  Discovery: loaded ${this.sensors.size} sensors`);
+  }
+
+  stop(): void {
+    if (this.pollTimer) clearInterval(this.pollTimer);
+  }
+
+  private async pollEvents(): Promise<void> {
+    try {
+      const current = await this.provider.getBlockNumber();
+      if (current <= this.lastBlock) return;
+
+      const from = this.lastBlock + 1;
+      const to   = Math.min(current, from + 9_000);
+
+      const [registered, deactivated, reputation] = await Promise.all([
+        this.registry.queryFilter(this.registry.filters['SensorRegistered'](), from, to),
+        this.registry.queryFilter(this.registry.filters['SensorDeactivated'](), from, to),
+        this.registry.queryFilter(this.registry.filters['ReputationUpdated'](), from, to),
+      ]);
+
+      for (const log of registered) {
+        const decoded = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (decoded) void this.loadSensor(Number(decoded.args[0] as bigint));
+      }
+      for (const log of deactivated) {
+        const decoded = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (decoded) {
+          const s = this.sensors.get(Number(decoded.args[0] as bigint));
+          if (s) s.active = false;
+        }
+      }
+      for (const log of reputation) {
+        const decoded = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (decoded) {
+          const s = this.sensors.get(Number(decoded.args[0] as bigint));
+          if (s) s.reputation = decoded.args[1] as bigint;
+        }
+      }
+
+      this.lastBlock = to;
+    } catch (err) {
+      console.warn('[Discovery] pollEvents failed:', (err as Error).message);
+    }
   }
 
   private async loadSensor(id: number): Promise<void> {

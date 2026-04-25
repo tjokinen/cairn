@@ -97,6 +97,14 @@ async function main() {
   writeFileSync(outputPath, JSON.stringify(deployments, null, 2));
   console.log(`Step 4: deployments.json written to ${outputPath}\n`);
 
+  // 5. Set aggregatorService = deployer EOA on all three contracts.
+  //    Registry/aggregator/attestation writes use ethers.js with DEPLOYER_PRIVATE_KEY
+  //    (Circle SDK is used only for USDC movements).
+  console.log('Step 5: Setting aggregatorService on contracts...');
+  const deployerForStep5 = new ethers.Wallet(requireEnv('DEPLOYER_PRIVATE_KEY'));
+  await setAggregatorService(contracts, deployerForStep5.address);
+  console.log('  aggregatorService set on all contracts\n');
+
   console.log('=== Bootstrap complete ===');
   console.log('Contract addresses:');
   for (const [name, addr] of Object.entries(contracts)) {
@@ -263,6 +271,36 @@ async function deployContract(
   await contract.waitForDeployment();
 
   return await contract.getAddress();
+}
+
+// ── setAggregatorService ──────────────────────────────────────────────────────
+
+async function setAggregatorService(
+  contracts: { sensorRegistry: string; cairnAggregator: string; cairnAttestation: string },
+  aggregatorAddress: string,
+): Promise<void> {
+  const deployerKey = requireEnv('DEPLOYER_PRIVATE_KEY');
+  const provider = new ethers.JsonRpcProvider(ARC_RPC_URL, ARC_CHAIN_ID);
+  const deployer = new ethers.Wallet(deployerKey, provider);
+
+  const abi = ['function setAggregatorService(address) external', 'function aggregatorService() view returns (address)'];
+  const targets = [
+    { name: 'SensorRegistry',   address: contracts.sensorRegistry },
+    { name: 'CairnAggregator',  address: contracts.cairnAggregator },
+    { name: 'CairnAttestation', address: contracts.cairnAttestation },
+  ];
+  for (const { name, address } of targets) {
+    const c = new ethers.Contract(address, abi, deployer);
+    const current = await c.aggregatorService() as string;
+    if (current.toLowerCase() === aggregatorAddress.toLowerCase()) {
+      console.log(`    ${name}: already set ✓`);
+      continue;
+    }
+    process.stdout.write(`    ${name}: setting... `);
+    const tx = await c.setAggregatorService(aggregatorAddress);
+    await tx.wait();
+    console.log(`done (${tx.hash})`);
+  }
 }
 
 // ── Run ───────────────────────────────────────────────────────────────────────

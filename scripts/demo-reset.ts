@@ -63,7 +63,7 @@ async function resetOperator5Bias(): Promise<void> {
   const port = process.env['OPERATOR5_PORT'] ?? '3005';
   try {
     const { default: axios } = await import('axios');
-    await axios.post(`http://localhost:${port}/admin/set-bias`, { biasOffset: 0 }, { timeout: 2000 });
+    await axios.post(`http://localhost:${port}/admin/set-bias`, { offset: 0 }, { timeout: 2000 });
     console.log('  Operator 5 bias reset to 0');
   } catch { /* not running */ }
 }

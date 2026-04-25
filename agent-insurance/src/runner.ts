@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import axios from 'axios';
+import { ethers } from 'ethers';
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets';
 import { ExactEvmScheme as ExactEvmSchemeClient } from '@x402/evm/exact/client';
 import { BatchEvmScheme, CompositeEvmScheme } from '@circle-fin/x402-batching/client';
@@ -203,22 +204,25 @@ export class InsuranceRunner extends EventEmitter {
     if (this.timer) clearInterval(this.timer);
   }
 
-  private makeCircleSigner(): BatchEvmSigner {
-    const walletId  = this.agentWalletId;
-    const address   = this.agentAddress;
-    const circle    = this.circle;
+  private makePaymentSigner(): BatchEvmSigner {
+    // Circle's signTypedData API does not support Arc EIP-712 signing.
+    // Use a local EOA wallet (DEPLOYER_PRIVATE_KEY) for x402 payment authorization.
+    // Circle wallets are still used for on-chain contract execution (settle, payout).
+    const wallet = new ethers.Wallet(process.env['DEPLOYER_PRIVATE_KEY']!);
     return {
-      address,
+      address: wallet.address as `0x${string}`,
       async signTypedData(data: {
         domain:      Record<string, unknown>;
         types:       Record<string, unknown>;
         primaryType: string;
         message:     Record<string, unknown>;
       }) {
-        const res = await circle.signTypedData({ walletId, data: JSON.stringify(data) });
-        const sig = res.data?.signature;
-        if (!sig) throw new Error('signTypedData: no signature from Circle');
-        return sig as `0x${string}`;
+        const { EIP712Domain: _, ...types } = data.types as Record<string, ethers.TypedDataField[]>;
+        return wallet.signTypedData(
+          data.domain as ethers.TypedDataDomain,
+          types,
+          data.message,
+        ) as Promise<`0x${string}`>;
       },
     } as BatchEvmSigner;
   }
@@ -238,7 +242,7 @@ export class InsuranceRunner extends EventEmitter {
 
     // Step 2: fetch verified reading from aggregator
     const { lat, lon } = this.policy.coverageLocation;
-    const queryUrl = `${this.aggregatorUrl}/readings?dataType=${encodeURIComponent(this.policy.dataType)}&lat=${lat}&lon=${lon}&quorum=3`;
+    const queryUrl = `${this.aggregatorUrl}/readings?dataType=${encodeURIComponent(this.policy.dataType)}&lat=${lat}&lon=${lon}&quorum=5`;
 
     try {
       const entry = await this.fetchReading(queryUrl);
@@ -269,7 +273,7 @@ export class InsuranceRunner extends EventEmitter {
 
   private async fetchReading(url: string): Promise<ReadingEntry | null> {
     const arcNetwork = `eip155:${this.arcChainId}` as Network;
-    const signer = this.makeCircleSigner();
+    const signer = this.makePaymentSigner();
     const scheme = new CompositeEvmScheme(
       new BatchEvmScheme(signer),
       new ExactEvmSchemeClient(signer),

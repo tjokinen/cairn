@@ -112,7 +112,7 @@ async function main() {
   // T+60s: flip Operator 5 rogue
   await sleep(ROGUE_DELAY_MS);
   try {
-    await axios.post(`http://localhost:${OPERATOR5_PORT}/admin/set-bias`, { biasOffset: ROGUE_BIAS });
+    await axios.post(`http://localhost:${OPERATOR5_PORT}/admin/set-bias`, { offset: ROGUE_BIAS });
     narrate(`Operator 5 flipped ROGUE — bias injected: +${ROGUE_BIAS}°C 🔴`);
     narrate('Watch the slashing feed on the dashboard…');
   } catch (err) {

@@ -41,7 +41,7 @@ function buildArcFacilitatorClient(arcNetwork: Network, facilitatorUrl: string):
   };
 }
 
-function buildGatewayFacilitatorClient(gatewayUrl: string): FacilitatorClient {
+function buildGatewayFacilitatorClient(gatewayUrl: string, network: Network): FacilitatorClient {
   const gatewayFacilitator = new BatchFacilitatorClient({ url: gatewayUrl });
 
   return {
@@ -58,7 +58,8 @@ function buildGatewayFacilitatorClient(gatewayUrl: string): FacilitatorClient {
       ) as unknown as Promise<SettleResponse>;
     },
     async getSupported() {
-      return gatewayFacilitator.getSupported() as unknown as ReturnType<FacilitatorClient['getSupported']>;
+      // Circle Gateway does not expose a getSupported endpoint; return static capabilities.
+      return { kinds: [{ x402Version: 2, scheme: 'exact', network }], extensions: [], signers: {} } as unknown as ReturnType<FacilitatorClient['getSupported']>;
     },
   };
 }
@@ -139,12 +140,8 @@ async function main() {
   const defaultGatewayUrl = 'https://gateway-api-testnet.circle.com/gateway';
   const facilitatorUrl = (process.env.X402_FACILITATOR_URL?.trim() || defaultFacilitatorUrl).replace(/\/+$/, '');
   const gatewayUrl = (process.env.CIRCLE_GATEWAY_URL?.trim() || defaultGatewayUrl).replace(/\/+$/, '');
-  const facilitator = [
-    // Circle Gateway facilitator for gas-free nanopayment compatibility.
-    buildGatewayFacilitatorClient(gatewayUrl),
-    // Local Arc facilitator fallback if Gateway is unavailable.
-    buildArcFacilitatorClient(arcNetwork, facilitatorUrl),
-  ];
+  // Only the local Arc facilitator can verify Arc EIP-3009 payments.
+  const facilitator = [buildArcFacilitatorClient(arcNetwork, facilitatorUrl)];
   console.log(`  x402 facilitator: ${facilitatorUrl}`);
   console.log(`  Circle nanopayments: enabled (${gatewayUrl})`);
 
@@ -217,7 +214,7 @@ async function main() {
             network: arcNetwork,
             payTo:   walletAddress,
             // EIP-712 domain params for Arc USDC — required for local facilitator signing
-            extra:   { name: 'USD Coin', version: '2' },
+            extra:   { name: 'USDC', version: '2' },
           },
           description: `Sensor reading from ${config.name}`,
         },

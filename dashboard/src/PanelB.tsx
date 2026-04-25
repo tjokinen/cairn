@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { BusEvent } from './types';
 
 interface TxEntry { id: number; ts: number; event: BusEvent }
@@ -61,9 +61,15 @@ function Counter({ label, value }: { label: string; value: string }) {
 }
 
 export default function PanelB({ events, totalTxCount, totalSettlements, operatorEarnings, protocolTreasury }: Props) {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [events.length]);
+
   return (
-    <div className="panel flex flex-col h-full">
-      <div className="panel-header flex-col items-start gap-2 py-2">
+    <div className="panel flex flex-col h-full min-h-0">
+      <div className="panel-header flex-col items-start gap-2 py-2 shrink-0">
         <span>Transaction Stream</span>
         <div className="flex gap-2 flex-wrap">
           <Counter label="On-chain txns"  value={totalTxCount.toString()} />
@@ -73,7 +79,7 @@ export default function PanelB({ events, totalTxCount, totalSettlements, operato
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto text-xs divide-y divide-border">
+      <div className="flex-1 min-h-0 overflow-y-auto text-xs divide-y divide-border">
         {events.length === 0 && (
           <div className="p-4 text-gray-600 text-center">Waiting for events…</div>
         )}
@@ -89,6 +95,7 @@ export default function PanelB({ events, totalTxCount, totalSettlements, operato
             <span className="text-gray-300 leading-relaxed">{eventLabel(event)}</span>
           </div>
         ))}
+        <div ref={bottomRef} />
       </div>
     </div>
   );

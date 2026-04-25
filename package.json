@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "bootstrap": "tsx scripts/bootstrap.ts",
+    "setup:aggregator": "tsx scripts/setup-aggregator-service.ts",
     "demo:honest": "tsx scripts/demo-honest.ts",
     "demo:adversarial": "tsx scripts/demo-adversarial.ts",
     "demo:reset": "tsx scripts/demo-reset.ts",

@@ -24,9 +24,13 @@ export function verify(
       ['uint256', 'int256', 'uint256'],
       [r.sensorId, scaledValue, r.timestamp],
     );
+    // Circle's signMessage uses personal_sign, which prefixes the hash with
+    // "\x19Ethereum Signed Message:\n32" before signing. Apply the same prefix
+    // here so recoverAddress finds the correct signer.
     let recoveredAddr: string;
     try {
-      recoveredAddr = ethers.recoverAddress(messageHash, r.signature);
+      const prefixedHash = ethers.hashMessage(ethers.getBytes(messageHash));
+      recoveredAddr = ethers.recoverAddress(prefixedHash, r.signature);
     } catch {
       malformed.push(r);
       continue;

@@ -36,10 +36,11 @@ export class Indexer {
   private aggregator:  ethers.Contract;
   private attestation: ethers.Contract;
   private datatype:    ethers.Contract;
+  private pollTimer:   ReturnType<typeof setInterval> | null = null;
+  private lastBlock = 0;
 
   constructor(private deployments: Deployments) {
-    // Polling interval 2s — stays well within the 2s delivery SLA
-    this.provider    = new ethers.JsonRpcProvider(deployments.arcRpc, deployments.arcChainId, { polling: true, pollingInterval: 2000 });
+    this.provider    = new ethers.JsonRpcProvider(deployments.arcRpc, deployments.arcChainId);
     this.registry    = new ethers.Contract(deployments.contracts.sensorRegistry,   REGISTRY_ABI,    this.provider);
     this.aggregator  = new ethers.Contract(deployments.contracts.cairnAggregator,  AGGREGATOR_ABI,  this.provider);
     this.attestation = new ethers.Contract(deployments.contracts.cairnAttestation, ATTESTATION_ABI, this.provider);
@@ -47,93 +48,12 @@ export class Indexer {
   }
 
   async start(): Promise<void> {
-    // ── SensorRegistry ──────────────────────────────────────────────────────
-    this.registry.on('SensorRegistered', (sensorId, wallet, endpointUrl, dataTypes, lat, lon, ratePerQuery) => {
-      bus.publish({
-        type:        'chain.sensor_registered',
-        sensorId:    Number(sensorId),
-        wallet,
-        endpointUrl,
-        dataTypes:   (dataTypes as string[]).map((d) => ethers.decodeBytes32String(d)),
-        lat:         Number(lat) / 1e6,
-        lon:         Number(lon) / 1e6,
-        ratePerQuery: ratePerQuery.toString(),
-      });
-    });
+    const latest = await this.provider.getBlockNumber();
 
-    this.registry.on('SensorDeactivated', (sensorId) => {
-      bus.publish({ type: 'chain.sensor_deactivated', sensorId: Number(sensorId) });
-    });
-
-    this.registry.on('ReputationUpdated', (sensorId, newReputation, delta) => {
-      bus.publish({
-        type:          'chain.reputation_updated',
-        sensorId:      Number(sensorId),
-        newReputation: newReputation.toString(),
-        delta:         delta.toString(),
-      });
-    });
-
-    this.registry.on('Slashed', (sensorId, amount, remainingStake, autoDeactivated) => {
-      bus.publish({
-        type:             'chain.slashed',
-        sensorId:         Number(sensorId),
-        amount:           amount.toString(),
-        remainingStake:   remainingStake.toString(),
-        autoDeactivated,
-      });
-    });
-
-    // ── CairnAggregator ─────────────────────────────────────────────────────
-    this.aggregator.on('OperatorPaid', (customer, sensorId, sensorWallet, amount, queryId) => {
-      bus.publish({
-        type:        'chain.operator_paid',
-        customer,
-        sensorId:    Number(sensorId),
-        sensorWallet,
-        amount:      amount.toString(),
-        queryId,
-      });
-    });
-
-    this.aggregator.on('ProtocolFeeCollected', (customer, amount, queryId) => {
-      bus.publish({
-        type:     'chain.protocol_fee',
-        customer,
-        amount:   amount.toString(),
-        queryId,
-      });
-    });
-
-    // ── CairnAttestation ────────────────────────────────────────────────────
-    this.attestation.on('AttestationPosted', (attestationId, dataType, lat, lon, timestamp, confidenceBps) => {
-      bus.publish({
-        type:          'chain.attestation_posted',
-        attestationId,
-        dataType:      ethers.decodeBytes32String(dataType),
-        lat:           Number(lat) / 1e6,
-        lon:           Number(lon) / 1e6,
-        timestamp:     Number(timestamp),
-        confidenceBps: Number(confidenceBps),
-      });
-    });
-
-    // ── DataTypeRegistry (startup scan only, then live) ─────────────────────
-    this.datatype.on('DataTypeRegistered', (id, unit) => {
-      bus.publish({
-        type: 'chain.datatype_registered',
-        id:   ethers.decodeBytes32String(id),
-        unit,
-      });
-    });
-
-    // Backfill DataTypeRegistered events so frontend knows all types on load
-    // Note: Arc limits log queries to 10,000 blocks, so we query from a recent block
+    // ── Backfill DataTypeRegistered (Arc caps eth_getLogs at 10,000 blocks) ─
     try {
-      const filter    = this.datatype.filters['DataTypeRegistered']();
-      const latest    = await this.provider.getBlockNumber();
       const fromBlock = Math.max(0, latest - 9000);
-      const logs      = await this.datatype.queryFilter(filter, fromBlock, 'latest');
+      const logs      = await this.datatype.queryFilter(this.datatype.filters['DataTypeRegistered'](), fromBlock, latest);
       for (const log of logs) {
         const decoded = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!decoded) continue;
@@ -147,13 +67,74 @@ export class Indexer {
       console.warn('[Indexer] DataTypeRegistered backfill failed:', err);
     }
 
-    console.log('[Indexer] Subscribed to all contract events');
+    // Arc does not support stateful filters (eth_newFilter / eth_getFilterChanges).
+    // Poll with queryFilter on a timer instead.
+    this.lastBlock = latest;
+    this.pollTimer = setInterval(() => void this.pollEvents(), 5_000);
+
+    console.log('[Indexer] Started (getLogs polling, lastBlock=' + latest + ')');
   }
 
   stop(): void {
-    this.registry.removeAllListeners();
-    this.aggregator.removeAllListeners();
-    this.attestation.removeAllListeners();
-    this.datatype.removeAllListeners();
+    if (this.pollTimer) clearInterval(this.pollTimer);
+  }
+
+  private async pollEvents(): Promise<void> {
+    try {
+      const current = await this.provider.getBlockNumber();
+      if (current <= this.lastBlock) return;
+
+      const from = this.lastBlock + 1;
+      const to   = Math.min(current, from + 9_000);
+
+      const [regLogs, deactLogs, repLogs, slashLogs, opPaidLogs, feeLogs, attLogs, dtLogs] = await Promise.all([
+        this.registry.queryFilter(this.registry.filters['SensorRegistered'](),   from, to),
+        this.registry.queryFilter(this.registry.filters['SensorDeactivated'](),  from, to),
+        this.registry.queryFilter(this.registry.filters['ReputationUpdated'](),  from, to),
+        this.registry.queryFilter(this.registry.filters['Slashed'](),            from, to),
+        this.aggregator.queryFilter(this.aggregator.filters['OperatorPaid'](),          from, to),
+        this.aggregator.queryFilter(this.aggregator.filters['ProtocolFeeCollected'](),  from, to),
+        this.attestation.queryFilter(this.attestation.filters['AttestationPosted'](),   from, to),
+        this.datatype.queryFilter(this.datatype.filters['DataTypeRegistered'](),        from, to),
+      ]);
+
+      for (const log of regLogs) {
+        const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (!d) continue;
+        bus.publish({ type: 'chain.sensor_registered', sensorId: Number(d.args[0]), wallet: d.args[1] as string, endpointUrl: d.args[2] as string, dataTypes: (d.args[3] as string[]).map((x) => ethers.decodeBytes32String(x)), lat: Number(d.args[4]) / 1e6, lon: Number(d.args[5]) / 1e6, ratePerQuery: (d.args[6] as bigint).toString() });
+      }
+      for (const log of deactLogs) {
+        const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.sensor_deactivated', sensorId: Number(d.args[0]) });
+      }
+      for (const log of repLogs) {
+        const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.reputation_updated', sensorId: Number(d.args[0]), newReputation: (d.args[1] as bigint).toString(), delta: (d.args[2] as bigint).toString() });
+      }
+      for (const log of slashLogs) {
+        const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.slashed', sensorId: Number(d.args[0]), amount: (d.args[1] as bigint).toString(), remainingStake: (d.args[2] as bigint).toString(), autoDeactivated: d.args[3] as boolean });
+      }
+      for (const log of opPaidLogs) {
+        const d = this.aggregator.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.operator_paid', customer: d.args[0] as string, sensorId: Number(d.args[1]), sensorWallet: d.args[2] as string, amount: (d.args[3] as bigint).toString(), queryId: d.args[4] as string });
+      }
+      for (const log of feeLogs) {
+        const d = this.aggregator.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.protocol_fee', customer: d.args[0] as string, amount: (d.args[1] as bigint).toString(), queryId: d.args[2] as string });
+      }
+      for (const log of attLogs) {
+        const d = this.attestation.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.attestation_posted', attestationId: d.args[0] as string, dataType: ethers.decodeBytes32String(d.args[1] as string), lat: Number(d.args[2]) / 1e6, lon: Number(d.args[3]) / 1e6, timestamp: Number(d.args[4]), confidenceBps: Number(d.args[5]) });
+      }
+      for (const log of dtLogs) {
+        const d = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (d) bus.publish({ type: 'chain.datatype_registered', id: ethers.decodeBytes32String(d.args[0] as string), unit: d.args[1] as string });
+      }
+
+      this.lastBlock = to;
+    } catch (err) {
+      console.warn('[Indexer] pollEvents failed:', (err as Error).message);
+    }
   }
 }
