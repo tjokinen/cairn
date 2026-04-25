@@ -12,6 +12,7 @@
   "dependencies": {
     "@cairn/common": "*",
     "@circle-fin/developer-controlled-wallets": "^10.3.0",
+    "@circle-fin/x402-batching": "^3.0.2",
     "@x402/core": "^2.10.0",
     "@x402/evm": "^2.10.0",
     "@x402/express": "^2.10.0",

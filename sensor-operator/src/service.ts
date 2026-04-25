@@ -3,8 +3,10 @@ import express from 'express';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { paymentMiddleware, x402ResourceServer } from '@x402/express';
-import { ExactEvmScheme }      from '@x402/evm/exact/server';
+import { GatewayEvmScheme, BatchFacilitatorClient } from '@circle-fin/x402-batching/server';
 import { HTTPFacilitatorClient } from '@x402/core/server';
+import type { FacilitatorClient } from '@x402/core/server';
+import type { Network, PaymentPayload, PaymentRequirements, SettleResponse, VerifyResponse } from '@x402/core/types';
 
 import { loadConfig }           from './config.js';
 import { loadState, saveState } from './state.js';
@@ -17,6 +19,49 @@ import type { OperatorState }   from './state.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT  = resolve(__dirname, '..', '..');
+
+function buildArcFacilitatorClient(arcNetwork: Network, facilitatorUrl: string): FacilitatorClient {
+  const httpFacilitator = new HTTPFacilitatorClient({ url: facilitatorUrl });
+
+  return {
+    verify(payment: PaymentPayload, requirements: PaymentRequirements): Promise<VerifyResponse> {
+      return httpFacilitator.verify(payment, requirements);
+    },
+    settle(payment: PaymentPayload, requirements: PaymentRequirements): Promise<SettleResponse> {
+      return httpFacilitator.settle(payment, requirements);
+    },
+    // Keep startup deterministic even if the HTTP facilitator is not reachable yet.
+    async getSupported() {
+      return {
+        kinds: [{ x402Version: 2, scheme: 'exact', network: arcNetwork }],
+        extensions: [],
+        signers: {},
+      };
+    },
+  };
+}
+
+function buildGatewayFacilitatorClient(gatewayUrl: string): FacilitatorClient {
+  const gatewayFacilitator = new BatchFacilitatorClient({ url: gatewayUrl });
+
+  return {
+    verify(payment: PaymentPayload, requirements: PaymentRequirements): Promise<VerifyResponse> {
+      return gatewayFacilitator.verify(
+        payment as unknown as Parameters<BatchFacilitatorClient['verify']>[0],
+        requirements as unknown as Parameters<BatchFacilitatorClient['verify']>[1],
+      ) as unknown as Promise<VerifyResponse>;
+    },
+    settle(payment: PaymentPayload, requirements: PaymentRequirements): Promise<SettleResponse> {
+      return gatewayFacilitator.settle(
+        payment as unknown as Parameters<BatchFacilitatorClient['settle']>[0],
+        requirements as unknown as Parameters<BatchFacilitatorClient['settle']>[1],
+      ) as unknown as Promise<SettleResponse>;
+    },
+    async getSupported() {
+      return gatewayFacilitator.getSupported() as unknown as ReturnType<FacilitatorClient['getSupported']>;
+    },
+  };
+}
 
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 
@@ -89,13 +134,24 @@ async function main() {
   }
 
   // ── x402 resource server ──────────────────────────────────────────────────
-  const facilitatorUrl = process.env.X402_FACILITATOR_URL ?? 'https://facilitator.x402.org';
-  const facilitator    = new HTTPFacilitatorClient({ url: facilitatorUrl });
+  const arcNetwork = `eip155:${deployments.arcChainId}` as Network;
+  const defaultFacilitatorUrl = `http://localhost:${process.env.AGGREGATOR_PORT ?? '4000'}/facilitator`;
+  const defaultGatewayUrl = 'https://gateway-api-testnet.circle.com/gateway';
+  const facilitatorUrl = (process.env.X402_FACILITATOR_URL?.trim() || defaultFacilitatorUrl).replace(/\/+$/, '');
+  const gatewayUrl = (process.env.CIRCLE_GATEWAY_URL?.trim() || defaultGatewayUrl).replace(/\/+$/, '');
+  const facilitator = [
+    // Circle Gateway facilitator for gas-free nanopayment compatibility.
+    buildGatewayFacilitatorClient(gatewayUrl),
+    // Local Arc facilitator fallback if Gateway is unavailable.
+    buildArcFacilitatorClient(arcNetwork, facilitatorUrl),
+  ];
+  console.log(`  x402 facilitator: ${facilitatorUrl}`);
+  console.log(`  Circle nanopayments: enabled (${gatewayUrl})`);
 
-  const evmScheme = new ExactEvmScheme();
-  // Arc testnet (5042002) is not in x402/evm's built-in list — register a custom parser.
+  const evmScheme = new GatewayEvmScheme();
+  // Ensure Arc USDC address resolution for both onchain exact and Gateway-compatible requirements.
   evmScheme.registerMoneyParser(async (amountDecimal, network) => {
-    if (network !== `eip155:${deployments.arcChainId}`) return null;
+    if (network !== arcNetwork) return null;
     const smallestUnits = Math.round(amountDecimal * 1_000_000).toString();
     return {
       amount: smallestUnits,
@@ -104,7 +160,7 @@ async function main() {
   });
 
   const resourceServer = new x402ResourceServer(facilitator)
-    .register(`eip155:${deployments.arcChainId}`, evmScheme);
+    .register(arcNetwork, evmScheme);
 
   const priceUSD = `$${(config.ratePerQuery / 1_000_000).toFixed(7)}`;
 
@@ -158,7 +214,7 @@ async function main() {
           accepts: {
             scheme:  'exact',
             price:   priceUSD,
-            network: `eip155:${deployments.arcChainId}`,
+            network: arcNetwork,
             payTo:   walletAddress,
             // EIP-712 domain params for Arc USDC — required for local facilitator signing
             extra:   { name: 'USD Coin', version: '2' },

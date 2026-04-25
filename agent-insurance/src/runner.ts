@@ -2,6 +2,9 @@ import { EventEmitter } from 'events';
 import axios from 'axios';
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets';
 import { ExactEvmScheme as ExactEvmSchemeClient } from '@x402/evm/exact/client';
+import { BatchEvmScheme, CompositeEvmScheme } from '@circle-fin/x402-batching/client';
+import type { BatchEvmSigner } from '@circle-fin/x402-batching';
+import type { Network } from '@x402/core/types';
 
 export interface BreachCondition {
   op: '>' | '<';
@@ -50,6 +53,118 @@ export interface PolicyPaidEvent {
 
 export type InsuranceEvent = AgentSnapshot | PolicyPaidEvent;
 
+type RequirementCandidate = {
+  x402Version: number;
+  requirement: Record<string, unknown>;
+};
+
+function decodeBase64Json(encoded: string): unknown | null {
+  try {
+    return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
+  } catch {
+    try {
+      const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+      return JSON.parse(Buffer.from(padded, 'base64').toString('utf8'));
+    } catch {
+      return null;
+    }
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function normalizeRequirements(raw: unknown): RequirementCandidate[] {
+  const out: RequirementCandidate[] = [];
+
+  if (Array.isArray(raw)) {
+    for (const entry of raw) {
+      if (!isRecord(entry)) continue;
+      const x402Version = typeof entry['x402Version'] === 'number'
+        ? entry['x402Version']
+        : typeof entry['amount'] === 'string' ? 2 : 1;
+      out.push({ x402Version, requirement: entry });
+    }
+    return out;
+  }
+
+  if (isRecord(raw) && Array.isArray(raw['accepts'])) {
+    const rootVersion = typeof raw['x402Version'] === 'number' ? raw['x402Version'] : undefined;
+    for (const entry of raw['accepts']) {
+      if (!isRecord(entry)) continue;
+      const x402Version = rootVersion
+        ?? (typeof entry['x402Version'] === 'number' ? entry['x402Version'] : undefined)
+        ?? (typeof entry['amount'] === 'string' ? 2 : 1);
+      out.push({ x402Version, requirement: entry });
+    }
+    return out;
+  }
+
+  if (isRecord(raw)) {
+    const x402Version = typeof raw['x402Version'] === 'number'
+      ? raw['x402Version']
+      : typeof raw['amount'] === 'string' ? 2 : 1;
+    out.push({ x402Version, requirement: raw });
+  }
+
+  return out;
+}
+
+function parsePaymentRequiredCandidates(probe: Record<string, unknown>, headers: Record<string, string | undefined>): RequirementCandidate[] {
+  const encoded = headers['payment-required']
+    ?? headers['PAYMENT-REQUIRED']
+    // Legacy compatibility for older x402 header variants.
+    ?? headers['x-payment-requirements']
+    ?? (probe['x-payment-requirements'] as string | undefined);
+
+  if (!encoded) return [];
+  const decoded = decodeBase64Json(encoded);
+  if (decoded == null) return [];
+  return normalizeRequirements(decoded);
+}
+
+function isGatewayBatchOption(requirement: Record<string, unknown>): boolean {
+  const extra = requirement['extra'];
+  if (!extra || typeof extra !== 'object' || Array.isArray(extra)) return false;
+  const name = (extra as Record<string, unknown>)['name'];
+  return typeof name === 'string' && name.toLowerCase() === 'gatewaywalletbatched';
+}
+
+function selectRequirementsForAgent(candidates: RequirementCandidate[], arcNetwork: Network): RequirementCandidate[] {
+  const matchesArcExact = candidates.filter(({ requirement }) =>
+    requirement['scheme'] === 'exact' && requirement['network'] === arcNetwork,
+  );
+  if (matchesArcExact.length === 0) return [];
+
+  // Actively prefer Circle Gateway batched payments.
+  const gatewayPreferred = matchesArcExact.filter(({ requirement }) => isGatewayBatchOption(requirement));
+  const fallback = matchesArcExact.filter(({ requirement }) => !isGatewayBatchOption(requirement));
+  return [...gatewayPreferred, ...fallback];
+}
+
+function buildPaymentPayloadEnvelope(
+  requirement: RequirementCandidate,
+  created: { payload: unknown; extensions?: Record<string, unknown> },
+): Record<string, unknown> {
+  if (requirement.x402Version === 1) {
+    return {
+      x402Version: 1,
+      scheme: requirement.requirement['scheme'],
+      network: requirement.requirement['network'],
+      payload: created.payload,
+    };
+  }
+
+  return {
+    x402Version: 2,
+    accepted: requirement.requirement,
+    payload: created.payload,
+    ...(created.extensions ? { extensions: created.extensions } : {}),
+  };
+}
+
 export class InsuranceRunner extends EventEmitter {
   private history:        ReadingEntry[] = [];
   private premiumBalance: bigint;
@@ -88,7 +203,7 @@ export class InsuranceRunner extends EventEmitter {
     if (this.timer) clearInterval(this.timer);
   }
 
-  private makeCircleSigner() {
+  private makeCircleSigner(): BatchEvmSigner {
     const walletId  = this.agentWalletId;
     const address   = this.agentAddress;
     const circle    = this.circle;
@@ -105,7 +220,7 @@ export class InsuranceRunner extends EventEmitter {
         if (!sig) throw new Error('signTypedData: no signature from Circle');
         return sig as `0x${string}`;
       },
-    };
+    } as BatchEvmSigner;
   }
 
   private async tick(): Promise<void> {
@@ -153,31 +268,54 @@ export class InsuranceRunner extends EventEmitter {
   }
 
   private async fetchReading(url: string): Promise<ReadingEntry | null> {
+    const arcNetwork = `eip155:${this.arcChainId}` as Network;
     const signer = this.makeCircleSigner();
-    const scheme = new ExactEvmSchemeClient(signer);
+    const scheme = new CompositeEvmScheme(
+      new BatchEvmScheme(signer),
+      new ExactEvmSchemeClient(signer),
+    );
 
     // Probe for 402
-    let paymentHeader: string | undefined;
+    let requirementOrder: RequirementCandidate[] = [];
     try {
       const probe = await axios.get<Record<string, unknown>>(url, { validateStatus: (s) => s <= 402 });
       if (probe.status === 402) {
-        const reqsEncoded = (probe.headers as Record<string, string>)['x-payment-requirements']
-          ?? (probe.data as Record<string, unknown>)?.['x-payment-requirements'] as string | undefined;
-        if (reqsEncoded) {
-          const reqs    = JSON.parse(Buffer.from(reqsEncoded, 'base64url').toString('utf8'));
-          const reqsArr = Array.isArray(reqs) ? reqs : [reqs];
-          if (reqsArr.length > 0) {
-            const result = await scheme.createPaymentPayload(1, reqsArr[0] as Parameters<typeof scheme.createPaymentPayload>[1]);
-            paymentHeader = Buffer.from(JSON.stringify(result.payload)).toString('base64url');
-          }
-        }
+        const candidates = parsePaymentRequiredCandidates(
+          probe.data,
+          probe.headers as Record<string, string | undefined>,
+        );
+        requirementOrder = selectRequirementsForAgent(candidates, arcNetwork);
       } else if (probe.status === 200) {
         return this.parseReadingResponse(probe.data);
       }
     } catch { /* probe failed — try direct */ }
 
+    if (requirementOrder.length > 0) {
+      for (const [idx, selectedRequirement] of requirementOrder.entries()) {
+        try {
+          const created = await scheme.createPaymentPayload(
+            selectedRequirement.x402Version,
+            selectedRequirement.requirement as unknown as Parameters<CompositeEvmScheme['createPaymentPayload']>[1],
+          );
+          const payload = buildPaymentPayloadEnvelope(selectedRequirement, created);
+          const paymentHeader = Buffer.from(JSON.stringify(payload)).toString('base64');
+
+          const paidResp = await axios.get<Record<string, unknown>>(url, {
+            headers: { 'PAYMENT-SIGNATURE': paymentHeader },
+            validateStatus: (s) => s < 500,
+          });
+          if (paidResp.status === 200) {
+            return this.parseReadingResponse(paidResp.data);
+          }
+          console.warn(`[InsuranceRunner] payment option ${idx + 1}/${requirementOrder.length} returned ${paidResp.status}`);
+        } catch {
+          // Keep trying fallback requirements from the same 402 response.
+        }
+      }
+      return null;
+    }
+
     const resp = await axios.get<Record<string, unknown>>(url, {
-      headers: paymentHeader ? { 'X-PAYMENT': paymentHeader } : {},
       validateStatus: (s) => s < 500,
     });
     if (resp.status !== 200) {

@@ -66,11 +66,15 @@ export class LocalFacilitatorClient implements FacilitatorClient {
     if (now < Number(auth.validAfter))  return { isValid: false, invalidReason: 'payment_not_yet_valid' };
     if (now > Number(auth.validBefore)) return { isValid: false, invalidReason: 'payment_expired' };
 
-    const reqs = requirements as unknown as { payTo: string; maxAmountRequired: string };
+    const reqs = requirements as unknown as { payTo: string; amount?: string; maxAmountRequired?: string };
+    const requiredAmount = reqs.amount ?? reqs.maxAmountRequired;
+    if (!requiredAmount) {
+      return { isValid: false, invalidReason: 'invalid_payment_requirements' };
+    }
     if (auth.to.toLowerCase() !== reqs.payTo.toLowerCase()) {
       return { isValid: false, invalidReason: 'invalid_recipient' };
     }
-    if (BigInt(auth.value) < BigInt(reqs.maxAmountRequired)) {
+    if (BigInt(auth.value) < BigInt(requiredAmount)) {
       return { isValid: false, invalidReason: 'insufficient_funds' };
     }
 
@@ -117,7 +121,7 @@ export class LocalFacilitatorClient implements FacilitatorClient {
 
   async getSupported(): Promise<{ kinds: { x402Version: number; scheme: string; network: Network }[]; extensions: string[]; signers: Record<string, string[]> }> {
     return {
-      kinds: [{ x402Version: 1, scheme: 'exact', network: `eip155:${this.arcChainId}` as Network }],
+      kinds: [{ x402Version: 2, scheme: 'exact', network: `eip155:${this.arcChainId}` as Network }],
       extensions: [],
       signers: {},
     };

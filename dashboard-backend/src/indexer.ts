@@ -127,10 +127,13 @@ export class Indexer {
       });
     });
 
-    // Backfill DataTypeRegistered events from genesis so frontend knows all types on load
+    // Backfill DataTypeRegistered events so frontend knows all types on load
+    // Note: Arc limits log queries to 10,000 blocks, so we query from a recent block
     try {
-      const filter  = this.datatype.filters['DataTypeRegistered']();
-      const logs    = await this.datatype.queryFilter(filter, 0, 'latest');
+      const filter    = this.datatype.filters['DataTypeRegistered']();
+      const latest    = await this.provider.getBlockNumber();
+      const fromBlock = Math.max(0, latest - 9000);
+      const logs      = await this.datatype.queryFilter(filter, fromBlock, 'latest');
       for (const log of logs) {
         const decoded = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!decoded) continue;

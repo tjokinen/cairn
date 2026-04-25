@@ -33,6 +33,7 @@ Fill in `.env`:
 - `CIRCLE_API_KEY` — from Circle Developer Console
 - `CIRCLE_ENTITY_SECRET` — generated in Circle Console (Entity Secret for developer-controlled wallets)
 - `CIRCLE_WALLET_SET_ID` — create a Wallet Set in Circle Console and paste the ID
+- `CIRCLE_GATEWAY_URL` — Circle Gateway base URL for nanopayments (default testnet: `https://gateway-api-testnet.circle.com/gateway`)
 - `DEPLOYER_PRIVATE_KEY` — a funded Arc testnet wallet private key for contract deployment. Generate one and fund it from [faucet.circle.com](https://faucet.circle.com) (select Arc Testnet)
 - `OPENWEATHERMAP_API_KEY` — from OpenWeatherMap dashboard
 
@@ -74,6 +75,8 @@ npm run demo:adversarial
 # Reset all state and redeploy
 npm run demo:reset
 ```
+
+All x402 payment paths in the demo are configured to actively prefer Circle Gateway gasless nanopayments on Arc testnet, and buyers automatically retry compatible Arc exact payment options from the same `402` response if the preferred Gateway option is unavailable.
 
 ---
 
