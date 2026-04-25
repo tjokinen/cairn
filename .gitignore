@@ -1,0 +1,8 @@
+PLAN.md
+.env
+deployments.json
+node_modules/
+dist/
+contracts/out/
+contracts/cache/
+*.log
