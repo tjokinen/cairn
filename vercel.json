@@ -1,8 +1,7 @@
 {
-  "rootDirectory": "dashboard",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "buildCommand": "cd dashboard && npm install && npm run build",
+  "outputDirectory": "dashboard/dist",
+  "installCommand": "echo skip",
   "framework": null,
   "env": {
     "VITE_DEMO_MODE": "1"
