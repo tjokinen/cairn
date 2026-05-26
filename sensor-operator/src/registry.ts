@@ -89,7 +89,7 @@ export class RegistryClient {
 
     const lat = Math.round(config.location.lat * 1e6);
     const lon = Math.round(config.location.lon * 1e6);
-    const endpointUrl = `http://localhost:${config.port}`;
+    const endpointUrl = process.env['OPERATOR_ENDPOINT_URL'] ?? `http://localhost:${config.port}`;
 
     console.log(`  Calling SensorRegistry.register() for ${config.name}...`);
     const res = await this.circle.createContractExecutionTransaction({

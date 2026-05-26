@@ -131,7 +131,7 @@ npm run demo:honest
 npm run demo:reset
 ```
 
-Open the dashboard at `http://localhost:3000`.
+Open the dashboard at `http://localhost:5173` (Vite dev server). The dashboard-backend listens on `:5001` (HTTP) and `:5002` (WebSocket).
 
 ---
 

@@ -140,6 +140,8 @@ async function main() {
   const defaultGatewayUrl = 'https://gateway-api-testnet.circle.com/gateway';
   const facilitatorUrl = (process.env.X402_FACILITATOR_URL?.trim() || defaultFacilitatorUrl).replace(/\/+$/, '');
   const gatewayUrl = (process.env.CIRCLE_GATEWAY_URL?.trim() || defaultGatewayUrl).replace(/\/+$/, '');
+  const usdcAddress = process.env.USDC_ADDRESS?.trim();
+  if (!usdcAddress) throw new Error('USDC_ADDRESS env var is required');
   // Only the local Arc facilitator can verify Arc EIP-3009 payments.
   const facilitator = [buildArcFacilitatorClient(arcNetwork, facilitatorUrl)];
   console.log(`  x402 facilitator: ${facilitatorUrl}`);
@@ -152,7 +154,7 @@ async function main() {
     const smallestUnits = Math.round(amountDecimal * 1_000_000).toString();
     return {
       amount: smallestUnits,
-      asset:  process.env.USDC_ADDRESS ?? '0x3600000000000000000000000000000000000000',
+      asset:  usdcAddress,
     };
   });
 

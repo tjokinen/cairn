@@ -370,6 +370,7 @@ export class InsuranceRunner extends EventEmitter {
   private async triggerPayout(attestationIds: string[]): Promise<void> {
     console.log(`[InsuranceRunner] Breach detected — paying out ${this.policy.coverageAmountUSDC} micro-USDC to ${this.policy.policyholder}`);
 
+    let txId: string | undefined;
     try {
       const txRes = await this.circle.createContractExecutionTransaction({
         walletId:         this.agentWalletId,
@@ -379,17 +380,22 @@ export class InsuranceRunner extends EventEmitter {
         fee: { type: 'level', config: { feeLevel: 'HIGH' } },
       });
 
-      const txId = txRes.data?.id;
+      txId = txRes.data?.id;
       if (!txId) throw new Error('No transaction ID from Circle');
 
+      const TERMINAL = new Set(['COMPLETE', 'FAILED', 'CANCELLED', 'DENIED']);
       let txHash = '';
+      let confirmed = false;
       for (let i = 0; i < 30; i++) {
         await new Promise((r) => setTimeout(r, 2000));
         const status = await this.circle.getTransaction({ id: txId });
         const tx     = status.data?.transaction;
-        if (tx?.state === 'CONFIRMED') { txHash = tx.txHash ?? ''; break; }
-        if (tx?.state === 'FAILED') throw new Error(`Payout tx failed: ${tx.errorReason}`);
+        const state  = tx?.state;
+        if (!state) continue;
+        if (state === 'COMPLETE') { txHash = tx?.txHash ?? ''; confirmed = true; break; }
+        if (TERMINAL.has(state)) throw new Error(`Payout tx ${txId} ended in state ${state}`);
       }
+      if (!confirmed) throw new Error(`Payout tx ${txId} timed out before COMPLETE`);
 
       this.emit('event', {
         type:           'insurance.paid',
@@ -404,7 +410,9 @@ export class InsuranceRunner extends EventEmitter {
       console.log(`[InsuranceRunner] Payout complete: ${txHash}`);
     } catch (err) {
       console.error('[InsuranceRunner] triggerPayout failed:', err);
-      this.paid = false; // allow retry on next cycle
+      // Only retry if the tx was never submitted. Once Circle has a txId,
+      // the funds may already be in flight — retrying would double-pay.
+      if (!txId) this.paid = false;
     }
   }
 }
