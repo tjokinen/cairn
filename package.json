@@ -17,6 +17,7 @@
     "setup:aggregator": "tsx scripts/setup-aggregator-service.ts",
     "demo:honest": "tsx scripts/demo-honest.ts",
     "demo:adversarial": "tsx scripts/demo-adversarial.ts",
+    "demo:payout-slash": "tsx scripts/demo-payout-slash.ts",
     "demo:reset": "tsx scripts/demo-reset.ts",
     "demo:record": "tsx scripts/demo-record.ts",
     "demo:replay": "tsx scripts/demo-replay.ts",

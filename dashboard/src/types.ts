@@ -4,14 +4,14 @@ export type WsMessage = { type: string; timestamp: number; payload: BusEvent };
 
 export type BusEvent =
   // Chain events
-  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string }
-  | { type: 'chain.sensor_deactivated';   sensorId: number }
-  | { type: 'chain.reputation_updated';   sensorId: number; newReputation: string; delta: string }
-  | { type: 'chain.slashed';              sensorId: number; amount: string; remainingStake: string; autoDeactivated: boolean }
-  | { type: 'chain.operator_paid';        customer: string; sensorId: number; sensorWallet: string; amount: string; queryId: string }
-  | { type: 'chain.protocol_fee';         customer: string; amount: string; queryId: string }
-  | { type: 'chain.attestation_posted';   attestationId: string; dataType: string; lat: number; lon: number; timestamp: number; confidenceBps: number }
-  | { type: 'chain.datatype_registered';  id: string; unit: string }
+  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string; txHash?: string }
+  | { type: 'chain.sensor_deactivated';   sensorId: number; txHash?: string }
+  | { type: 'chain.reputation_updated';   sensorId: number; newReputation: string; delta: string; txHash?: string }
+  | { type: 'chain.slashed';              sensorId: number; amount: string; remainingStake: string; autoDeactivated: boolean; txHash?: string }
+  | { type: 'chain.operator_paid';        customer: string; sensorId: number; sensorWallet: string; amount: string; queryId: string; txHash?: string }
+  | { type: 'chain.protocol_fee';         customer: string; amount: string; queryId: string; txHash?: string }
+  | { type: 'chain.attestation_posted';   attestationId: string; dataType: string; lat: number; lon: number; timestamp: number; confidenceBps: number; txHash?: string }
+  | { type: 'chain.datatype_registered';  id: string; unit: string; txHash?: string }
   // Aggregator events
   | { type: 'query.received';             customer: string; params: Record<string, unknown>; selectedSensorIds: number[] }
   | { type: 'query.sensor_payment';       sensorId: number; wallet: string; amount: number; txHash: string }

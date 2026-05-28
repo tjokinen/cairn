@@ -58,9 +58,10 @@ export class Indexer {
         const decoded = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!decoded) continue;
         bus.publish({
-          type: 'chain.datatype_registered',
-          id:   ethers.decodeBytes32String(decoded.args[0] as string),
-          unit: decoded.args[1] as string,
+          type:   'chain.datatype_registered',
+          id:     ethers.decodeBytes32String(decoded.args[0] as string),
+          unit:   decoded.args[1] as string,
+          txHash: log.transactionHash,
         });
       }
     } catch (err) {
@@ -101,35 +102,35 @@ export class Indexer {
       for (const log of regLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!d) continue;
-        bus.publish({ type: 'chain.sensor_registered', sensorId: Number(d.args[0]), wallet: d.args[1] as string, endpointUrl: d.args[2] as string, dataTypes: (d.args[3] as string[]).map((x) => ethers.decodeBytes32String(x)), lat: Number(d.args[4]) / 1e6, lon: Number(d.args[5]) / 1e6, ratePerQuery: (d.args[6] as bigint).toString() });
+        bus.publish({ type: 'chain.sensor_registered', sensorId: Number(d.args[0]), wallet: d.args[1] as string, endpointUrl: d.args[2] as string, dataTypes: (d.args[3] as string[]).map((x) => ethers.decodeBytes32String(x)), lat: Number(d.args[4]) / 1e6, lon: Number(d.args[5]) / 1e6, ratePerQuery: (d.args[6] as bigint).toString(), txHash: log.transactionHash });
       }
       for (const log of deactLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.sensor_deactivated', sensorId: Number(d.args[0]) });
+        if (d) bus.publish({ type: 'chain.sensor_deactivated', sensorId: Number(d.args[0]), txHash: log.transactionHash });
       }
       for (const log of repLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.reputation_updated', sensorId: Number(d.args[0]), newReputation: (d.args[1] as bigint).toString(), delta: (d.args[2] as bigint).toString() });
+        if (d) bus.publish({ type: 'chain.reputation_updated', sensorId: Number(d.args[0]), newReputation: (d.args[1] as bigint).toString(), delta: (d.args[2] as bigint).toString(), txHash: log.transactionHash });
       }
       for (const log of slashLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.slashed', sensorId: Number(d.args[0]), amount: (d.args[1] as bigint).toString(), remainingStake: (d.args[2] as bigint).toString(), autoDeactivated: d.args[3] as boolean });
+        if (d) bus.publish({ type: 'chain.slashed', sensorId: Number(d.args[0]), amount: (d.args[1] as bigint).toString(), remainingStake: (d.args[2] as bigint).toString(), autoDeactivated: d.args[3] as boolean, txHash: log.transactionHash });
       }
       for (const log of opPaidLogs) {
         const d = this.aggregator.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.operator_paid', customer: d.args[0] as string, sensorId: Number(d.args[1]), sensorWallet: d.args[2] as string, amount: (d.args[3] as bigint).toString(), queryId: d.args[4] as string });
+        if (d) bus.publish({ type: 'chain.operator_paid', customer: d.args[0] as string, sensorId: Number(d.args[1]), sensorWallet: d.args[2] as string, amount: (d.args[3] as bigint).toString(), queryId: d.args[4] as string, txHash: log.transactionHash });
       }
       for (const log of feeLogs) {
         const d = this.aggregator.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.protocol_fee', customer: d.args[0] as string, amount: (d.args[1] as bigint).toString(), queryId: d.args[2] as string });
+        if (d) bus.publish({ type: 'chain.protocol_fee', customer: d.args[0] as string, amount: (d.args[1] as bigint).toString(), queryId: d.args[2] as string, txHash: log.transactionHash });
       }
       for (const log of attLogs) {
         const d = this.attestation.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.attestation_posted', attestationId: d.args[0] as string, dataType: ethers.decodeBytes32String(d.args[1] as string), lat: Number(d.args[2]) / 1e6, lon: Number(d.args[3]) / 1e6, timestamp: Number(d.args[4]), confidenceBps: Number(d.args[5]) });
+        if (d) bus.publish({ type: 'chain.attestation_posted', attestationId: d.args[0] as string, dataType: ethers.decodeBytes32String(d.args[1] as string), lat: Number(d.args[2]) / 1e6, lon: Number(d.args[3]) / 1e6, timestamp: Number(d.args[4]), confidenceBps: Number(d.args[5]), txHash: log.transactionHash });
       }
       for (const log of dtLogs) {
         const d = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (d) bus.publish({ type: 'chain.datatype_registered', id: ethers.decodeBytes32String(d.args[0] as string), unit: d.args[1] as string });
+        if (d) bus.publish({ type: 'chain.datatype_registered', id: ethers.decodeBytes32String(d.args[0] as string), unit: d.args[1] as string, txHash: log.transactionHash });
       }
 
       this.lastBlock = to;

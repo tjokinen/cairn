@@ -11,5 +11,5 @@
   "ratePerQuery": 240,
   "accuracy": { "noiseStddev": 0.3, "biasOffset": 0 },
   "port": 3003,
-  "adminEnabled": false
+  "adminEnabled": true
 }

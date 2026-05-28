@@ -2,16 +2,16 @@ import { EventEmitter } from 'events';
 
 // ── Event shapes ──────────────────────────────────────────────────────────────
 
-// On-chain events (from indexer.ts)
+// On-chain events (from indexer.ts) — txHash is the originating Arc transaction.
 export type ChainEvent =
-  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string }
-  | { type: 'chain.sensor_deactivated';   sensorId: number }
-  | { type: 'chain.reputation_updated';   sensorId: number; newReputation: string; delta: string }
-  | { type: 'chain.slashed';              sensorId: number; amount: string; remainingStake: string; autoDeactivated: boolean }
-  | { type: 'chain.operator_paid';        customer: string; sensorId: number; sensorWallet: string; amount: string; queryId: string }
-  | { type: 'chain.protocol_fee';         customer: string; amount: string; queryId: string }
-  | { type: 'chain.attestation_posted';   attestationId: string; dataType: string; lat: number; lon: number; timestamp: number; confidenceBps: number }
-  | { type: 'chain.datatype_registered';  id: string; unit: string };
+  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string; txHash?: string }
+  | { type: 'chain.sensor_deactivated';   sensorId: number; txHash?: string }
+  | { type: 'chain.reputation_updated';   sensorId: number; newReputation: string; delta: string; txHash?: string }
+  | { type: 'chain.slashed';              sensorId: number; amount: string; remainingStake: string; autoDeactivated: boolean; txHash?: string }
+  | { type: 'chain.operator_paid';        customer: string; sensorId: number; sensorWallet: string; amount: string; queryId: string; txHash?: string }
+  | { type: 'chain.protocol_fee';         customer: string; amount: string; queryId: string; txHash?: string }
+  | { type: 'chain.attestation_posted';   attestationId: string; dataType: string; lat: number; lon: number; timestamp: number; confidenceBps: number; txHash?: string }
+  | { type: 'chain.datatype_registered';  id: string; unit: string; txHash?: string };
 
 // Aggregator events (POSTed from WP-04 aggregator via HTTP)
 export type AggregatorEvent =

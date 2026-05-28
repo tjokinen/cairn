@@ -1,6 +1,15 @@
 import React from 'react';
 import type { BusEvent } from './types';
 
+const ARC_EXPLORER = 'https://testnet.arcscan.app';
+
+function txHashOf(e: BusEvent): string | null {
+  if ('txHash' in e && typeof e.txHash === 'string' && /^0x[0-9a-fA-F]{64}$/.test(e.txHash)) {
+    return e.txHash;
+  }
+  return null;
+}
+
 interface TxEntry { id: number; ts: number; event: BusEvent }
 
 interface Props {
@@ -77,18 +86,32 @@ export default function PanelB({ events, totalTxCount, totalSettlements, operato
         {events.length === 0 && (
           <div className="p-4 text-gray-600 text-center">Waiting for events…</div>
         )}
-        {events.map(({ id, ts, event }) => (
-          <div key={id} className="flex items-start gap-2 px-3 py-1.5 hover:bg-border/30 transition-colors">
-            <span className="text-gray-600 shrink-0 tabular-nums">
-              {new Date(ts).toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </span>
-            <span
-              className="shrink-0 w-2 h-2 rounded-full mt-0.5"
-              style={{ background: eventColor(event.type) }}
-            />
-            <span className="text-gray-300 leading-relaxed">{eventLabel(event)}</span>
-          </div>
-        ))}
+        {events.map(({ id, ts, event }) => {
+          const tx = txHashOf(event);
+          return (
+            <div key={id} className="flex items-start gap-2 px-3 py-1.5 hover:bg-border/30 transition-colors">
+              <span className="text-gray-600 shrink-0 tabular-nums">
+                {new Date(ts).toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+              <span
+                className="shrink-0 w-2 h-2 rounded-full mt-0.5"
+                style={{ background: eventColor(event.type) }}
+              />
+              <span className="text-gray-300 leading-relaxed flex-1">{eventLabel(event)}</span>
+              {tx && (
+                <a
+                  href={`${ARC_EXPLORER}/tx/${tx}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`View ${tx.slice(0, 10)}… on Arc explorer`}
+                  className="shrink-0 text-sky-400 hover:text-sky-300 hover:underline text-[10px] font-mono tabular-nums"
+                >
+                  {tx.slice(0, 6)}…{tx.slice(-4)} ↗
+                </a>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
