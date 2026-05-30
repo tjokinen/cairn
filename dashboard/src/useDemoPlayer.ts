@@ -57,6 +57,17 @@ export function useDemoPlayer({ dispatch, speed }: DemoPlayerOptions) {
 
   const restart = useCallback(() => startFrom(0), [startFrom]);
 
+  const pause = useCallback(() => {
+    stop();
+    setPlaying(false);
+  }, [stop]);
+
+  const resume = useCallback(() => {
+    if (indexRef.current >= eventsRef.current.length) return;
+    setPlaying(true);
+    scheduleNext();
+  }, [scheduleNext]);
+
   // Load demo.json once on mount
   useEffect(() => {
     fetch('./demo.json')
@@ -74,5 +85,5 @@ export function useDemoPlayer({ dispatch, speed }: DemoPlayerOptions) {
     return stop;
   }, [loaded, startFrom, stop]);
 
-  return { loaded, playing, progress, restart };
+  return { loaded, playing, progress, restart, pause, resume };
 }

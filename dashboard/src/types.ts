@@ -81,12 +81,14 @@ export interface AppState {
 
 // ── Static sensor metadata (registered at deploy time) ───────────────────────
 
+// sensorId order reflects actual on-chain registration order (operators
+// 3,4,5,2,1 registered in that sequence), not operator config file number.
 export const STATIC_SENSORS: Omit<SensorState, 'reputation' | 'active' | 'earnings' | 'queryCount' | 'repHistory'>[] = [
-  { sensorId: 1, name: 'Tecomán-01',  wallet: '', lat: 18.90, lon: -103.87, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
-  { sensorId: 2, name: 'Colima City', wallet: '', lat: 19.24, lon: -103.72, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
-  { sensorId: 3, name: 'Manzanillo',  wallet: '', lat: 19.11, lon: -104.34, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
-  { sensorId: 4, name: 'Armería',     wallet: '', lat: 18.93, lon: -103.96, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms','air.pm25_ugm3','air.pm10_ugm3'], ratePerQuery: 100 },
-  { sensorId: 5, name: 'Tecomán-02',  wallet: '', lat: 18.91, lon: -103.88, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
+  { sensorId: 1, name: 'Manzanillo',  wallet: '', lat: 19.11, lon: -104.34, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
+  { sensorId: 2, name: 'Armería',     wallet: '', lat: 18.93, lon: -103.96, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms','air.pm25_ugm3','air.pm10_ugm3'], ratePerQuery: 100 },
+  { sensorId: 3, name: 'Tecomán-02',  wallet: '', lat: 18.91, lon: -103.88, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
+  { sensorId: 4, name: 'Colima City', wallet: '', lat: 19.24, lon: -103.72, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
+  { sensorId: 5, name: 'Tecomán-01',  wallet: '', lat: 18.90, lon: -103.87, dataTypes: ['weather.temperature_c','weather.humidity_pct','weather.precipitation_mm_h','weather.wind_ms'], ratePerQuery: 100 },
 ];
 
 export const PLANNED_SENSORS = [

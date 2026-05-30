@@ -228,8 +228,6 @@ export class InsuranceRunner extends EventEmitter {
   }
 
   private async tick(): Promise<void> {
-    if (this.paid) return;
-
     const now     = Math.floor(Date.now() / 1000);
     const elapsed = BigInt(now - this.lastTickAt);
     this.lastTickAt = now;

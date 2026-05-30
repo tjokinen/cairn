@@ -63,6 +63,18 @@ export class ChainClient {
   private dataTypeContract: ethers.Contract;
   readonly usdcAddress: string;
 
+  // Serializes all writes through the deployer EOA. NonceManager alone can't
+  // protect against races when concurrent call sites (recordQuery, postAttestation,
+  // applyReputationUpdates, incrementQueryCount) interleave their async work —
+  // a failed send leaves the local nonce ahead of chain and every following tx
+  // collides. The mutex ensures send → wait completes before the next tx starts.
+  private writeQueue: Promise<unknown> = Promise.resolve();
+  private serialize<T>(fn: () => Promise<T>): Promise<T> {
+    const next = this.writeQueue.then(fn, fn);
+    this.writeQueue = next.catch(() => undefined);
+    return next;
+  }
+
   constructor(
     private deployments: Deployments,
     private aggregatorWalletId: string,
@@ -147,13 +159,17 @@ export class ChainClient {
   // ── Registry — ethers.js path ─────────────────────────────────────────────────
 
   async updateReputation(sensorId: number, delta: bigint): Promise<void> {
-    const tx = await this.registryWriter.updateReputation(sensorId, delta);
-    await tx.wait();
+    await this.serialize(async () => {
+      const tx = await this.registryWriter.updateReputation(sensorId, delta);
+      await tx.wait();
+    });
   }
 
   async incrementQueryCount(sensorId: number): Promise<void> {
-    const tx = await this.registryWriter.incrementQueryCount(sensorId);
-    await tx.wait();
+    await this.serialize(async () => {
+      const tx = await this.registryWriter.incrementQueryCount(sensorId);
+      await tx.wait();
+    });
   }
 
   // ── CairnAggregator — ethers.js path ─────────────────────────────────────────
@@ -166,41 +182,45 @@ export class ChainClient {
     protocolFee: number,
     queryId: string,
   ): Promise<void> {
-    const tx = await this.aggregatorWriter.recordQuery(
-      customer, sensorIds, sensorWallets, amounts, protocolFee, queryId,
-    );
-    await tx.wait();
+    await this.serialize(async () => {
+      const tx = await this.aggregatorWriter.recordQuery(
+        customer, sensorIds, sensorWallets, amounts, protocolFee, queryId,
+      );
+      await tx.wait();
+    });
   }
 
   // ── CairnAttestation — ethers.js path ────────────────────────────────────────
 
   async postAttestation(p: AttestationParams): Promise<string> {
-    const dataTypeBytes32 = ethers.encodeBytes32String(p.dataType);
-    const lat   = Math.round(p.lat * 1e6);
-    const lon   = Math.round(p.lon * 1e6);
-    const value = Math.round(p.verifiedValue * 1_000_000);
+    return this.serialize(async () => {
+      const dataTypeBytes32 = ethers.encodeBytes32String(p.dataType);
+      const lat   = Math.round(p.lat * 1e6);
+      const lon   = Math.round(p.lon * 1e6);
+      const value = Math.round(p.verifiedValue * 1_000_000);
 
-    const tx = await this.attestationWriter.postAttestation([
-      dataTypeBytes32,
-      lat,
-      lon,
-      p.timestamp,
-      p.contributingSensors,
-      p.excludedSensors,
-      value,
-      p.confidenceBps,
-      p.payloadHash,
-    ]);
-    const receipt = await tx.wait();
+      const tx = await this.attestationWriter.postAttestation([
+        dataTypeBytes32,
+        lat,
+        lon,
+        p.timestamp,
+        p.contributingSensors,
+        p.excludedSensors,
+        value,
+        p.confidenceBps,
+        p.payloadHash,
+      ]);
+      const receipt = await tx.wait();
 
-    const iface = new ethers.Interface(ATTESTATION_WRITE_ABI);
-    for (const log of receipt.logs) {
-      try {
-        const parsed = iface.parseLog({ topics: log.topics as string[], data: log.data });
-        if (parsed?.name === 'AttestationPosted') return parsed.args.attestationId as string;
-      } catch { /* skip */ }
-    }
-    throw new Error('AttestationPosted event not found');
+      const iface = new ethers.Interface(ATTESTATION_WRITE_ABI);
+      for (const log of receipt.logs) {
+        try {
+          const parsed = iface.parseLog({ topics: log.topics as string[], data: log.data });
+          if (parsed?.name === 'AttestationPosted') return parsed.args.attestationId as string;
+        } catch { /* skip */ }
+      }
+      throw new Error('AttestationPosted event not found');
+    });
   }
 
   // ── DataTypeRegistry ──────────────────────────────────────────────────────────

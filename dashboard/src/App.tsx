@@ -78,7 +78,7 @@ export default function App() {
       {/* Scripted demo banner */}
       {DEMO_MODE && (
         <div className="bg-yellow-500/10 border-b border-yellow-500/30 px-4 py-1.5 text-xs text-yellow-300 flex items-center justify-between shrink-0">
-          <span>⚠ SCRIPTED DEMO — synthetic data replay. Not connected to live sensors.</span>
+          <span>DEMO</span>
           <div className="flex items-center gap-3">
             <span className="text-yellow-500">Speed:</span>
             {SPEEDS.map(s => (
@@ -94,6 +94,12 @@ export default function App() {
                 {s}×
               </button>
             ))}
+            <button
+              onClick={demo.playing ? demo.pause : demo.resume}
+              className="px-2 py-0.5 rounded text-xs text-yellow-500 hover:text-yellow-300 border border-yellow-500/30 hover:border-yellow-400/50 transition-colors w-16"
+            >
+              {demo.playing ? '⏸ Pause' : '▶ Play'}
+            </button>
             <button
               onClick={demo.restart}
               className="px-2 py-0.5 rounded text-xs text-yellow-500 hover:text-yellow-300 border border-yellow-500/30 hover:border-yellow-400/50 transition-colors"

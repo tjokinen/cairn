@@ -27,12 +27,16 @@ import {
 } from './lib/services.js';
 import { WebSocket } from 'ws';
 
-const DEMO_INTERVAL_MS = 15_000;
+const DEMO_INTERVAL_MS = 20_000;
 const HEATWAVE_DELAY   = 30_000;             // T+30s: bias all sensors
 const ROGUE_DELAY      = 90_000;             // T+90s: sensor 5 goes extra-rogue
 const HEATWAVE_BIAS    = 15;                 // °C — pushes verified value >32°C
 const ROGUE_EXTRA_BIAS = 20;                 // °C — additive on top of heatwave
-const MAX_RUNTIME_MS   = 12 * 60 * 1000;     // 12-minute hard stop
+const MAX_RUNTIME_MS   = 15 * 60 * 1000;     // 15-minute hard stop
+
+// Reduce aggregator tx pressure (Arc testnet txpool is small): skip the
+// on-chain rep bumps for accepted sensors during the demo.
+process.env['AGGREGATOR_SKIP_HONEST_REP'] = 'true';
 
 function narrate(msg: string): void {
   const ts = new Date().toLocaleTimeString('en', { hour12: false });

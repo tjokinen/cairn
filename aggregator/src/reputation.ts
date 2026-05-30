@@ -20,30 +20,25 @@ export async function applyReputationUpdates(
   result: VerificationResult,
   chain: ChainClient,
 ): Promise<void> {
-  const updates: Promise<void>[] = [];
+  // Demo flag: skip honest reputation bumps to reduce on-chain tx pressure
+  // (Arc testnet txpool fills quickly under 5+ parallel updates per cycle).
+  const skipHonest = process.env['AGGREGATOR_SKIP_HONEST_REP'] === 'true';
 
-  for (const r of result.accepted) {
-    updates.push(
-      chain.updateReputation(r.sensorId, ACCEPTED_DELTA)
-        .then(() => {
-          bus.publish({ type: 'query.reputation_updated', sensorId: r.sensorId, delta: ACCEPTED_DELTA.toString(), bucket: 'accepted' });
-        })
-        .catch((err: unknown) => console.error(`updateReputation(${r.sensorId}) failed:`, err)),
-    );
+  const queue: Array<{ sensorId: number; delta: bigint; bucket: 'accepted' | 'outlier' }> = [];
+  if (!skipHonest) {
+    for (const r of result.accepted) queue.push({ sensorId: r.sensorId, delta: ACCEPTED_DELTA, bucket: 'accepted' });
   }
+  for (const r of result.outliers) queue.push({ sensorId: r.sensorId, delta: OUTLIER_DELTA, bucket: 'outlier' });
 
-  for (const r of result.outliers) {
-    updates.push(
-      chain.updateReputation(r.sensorId, OUTLIER_DELTA)
-        .then(() => {
-          bus.publish({ type: 'query.reputation_updated', sensorId: r.sensorId, delta: OUTLIER_DELTA.toString(), bucket: 'outlier' });
-        })
-        .catch((err: unknown) => console.error(`updateReputation(${r.sensorId}) failed:`, err)),
-    );
+  // Sequential: avoid flooding the mempool with concurrent txs from the same wallet.
+  for (const { sensorId, delta, bucket } of queue) {
+    try {
+      await chain.updateReputation(sensorId, delta);
+      bus.publish({ type: 'query.reputation_updated', sensorId, delta: delta.toString(), bucket });
+    } catch (err: unknown) {
+      console.error(`updateReputation(${sensorId}) failed:`, err);
+    }
   }
-
-  // Fire all in parallel; failures are logged but not thrown
-  await Promise.allSettled(updates);
 }
 
 /** Compute reputation deltas for a set of readings without making on-chain calls. */

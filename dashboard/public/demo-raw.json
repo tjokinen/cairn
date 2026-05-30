@@ -1,0 +1,1784 @@
+[
+  {
+    "wallTimeMs": 1779975178424,
+    "deltaMs": 17987,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975178419,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xc009aac078f5bd70589517fa1a88169e63cefbb8523e2d2cdb26082e9522c188",
+        "txHash": "0x9b8d9621dc184493ec83e937389d3a33479261677b7435c862d7e42280694bac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975178426,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975178420,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xc009aac078f5bd70589517fa1a88169e63cefbb8523e2d2cdb26082e9522c188",
+        "txHash": "0x9b8d9621dc184493ec83e937389d3a33479261677b7435c862d7e42280694bac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975178426,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975178421,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xc009aac078f5bd70589517fa1a88169e63cefbb8523e2d2cdb26082e9522c188",
+        "txHash": "0x9b8d9621dc184493ec83e937389d3a33479261677b7435c862d7e42280694bac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975178426,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975178423,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xc009aac078f5bd70589517fa1a88169e63cefbb8523e2d2cdb26082e9522c188",
+        "txHash": "0x9b8d9621dc184493ec83e937389d3a33479261677b7435c862d7e42280694bac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975183392,
+    "deltaMs": 4966,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975183391,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975152,
+        "confidenceBps": 8745,
+        "txHash": "0x7542ed70ed59d44ae468427f8d28ee4767085033df99647755b6305cacc41137"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975184628,
+    "deltaMs": 1236,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975184627,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "monitoring",
+        "premiumBalance": "356000",
+        "latestValue": 26.58748948947142,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          }
+        ],
+        "timestamp": 1779975152
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975188495,
+    "deltaMs": 3867,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975188494,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0x3829bf847d36cba4d755a343507e812f1b5bdce98bc487b62a625bb6761095b6",
+        "txHash": "0x7e3d8edaeda82802c92b3a1770276d6f83189b4c39d5b9d0095097667ba23aac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975188496,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975188495,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0x3829bf847d36cba4d755a343507e812f1b5bdce98bc487b62a625bb6761095b6",
+        "txHash": "0x7e3d8edaeda82802c92b3a1770276d6f83189b4c39d5b9d0095097667ba23aac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975188498,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975188497,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0x3829bf847d36cba4d755a343507e812f1b5bdce98bc487b62a625bb6761095b6",
+        "txHash": "0x7e3d8edaeda82802c92b3a1770276d6f83189b4c39d5b9d0095097667ba23aac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975188498,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975188498,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0x3829bf847d36cba4d755a343507e812f1b5bdce98bc487b62a625bb6761095b6",
+        "txHash": "0x7e3d8edaeda82802c92b3a1770276d6f83189b4c39d5b9d0095097667ba23aac"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975208455,
+    "deltaMs": 19957,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975208454,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975172,
+        "confidenceBps": 7408,
+        "txHash": "0x5bb016291b7376b65e15b05687f7c0ad10d3756c1f41928cf0cf97ab0ec138b5"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975212705,
+    "deltaMs": 4250,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975212704,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "approaching_threshold",
+        "premiumBalance": "352000",
+        "latestValue": 41.54000420192634,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          }
+        ],
+        "timestamp": 1779975172
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975213438,
+    "deltaMs": 733,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975213437,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xeb428963cbe658267877daeb3f0c3b73634ea8f9a6796e2e6b53f736cc45c9b1",
+        "txHash": "0xddba8a6f9519401c9137c202e0614fb98663e10adb1f8847d4f04aad3383b12b"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975213438,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975213438,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xeb428963cbe658267877daeb3f0c3b73634ea8f9a6796e2e6b53f736cc45c9b1",
+        "txHash": "0xddba8a6f9519401c9137c202e0614fb98663e10adb1f8847d4f04aad3383b12b"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975213439,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975213438,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xeb428963cbe658267877daeb3f0c3b73634ea8f9a6796e2e6b53f736cc45c9b1",
+        "txHash": "0xddba8a6f9519401c9137c202e0614fb98663e10adb1f8847d4f04aad3383b12b"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975213440,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975213440,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xeb428963cbe658267877daeb3f0c3b73634ea8f9a6796e2e6b53f736cc45c9b1",
+        "txHash": "0xddba8a6f9519401c9137c202e0614fb98663e10adb1f8847d4f04aad3383b12b"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975233469,
+    "deltaMs": 20029,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975233468,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975192,
+        "confidenceBps": 8411,
+        "txHash": "0xa5569c7564e2fa6b95aba7b6f7d20e521ee722eefaacdfb07fd3eda2d8f173f9"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975238399,
+    "deltaMs": 4930,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975238399,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "approaching_threshold",
+        "premiumBalance": "350000",
+        "latestValue": 41.73766944568146,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          }
+        ],
+        "timestamp": 1779975192
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975238419,
+    "deltaMs": 20,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975238419,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xf77b0f26a679a49821e464f901ff5c543454e5a4777ccb8e187e199b6ed7b52f",
+        "txHash": "0xee3b5153de9e16a925cc74c624b38a6f55cb5db566193ceac36bc9fdc25a7447"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975238420,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975238420,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xf77b0f26a679a49821e464f901ff5c543454e5a4777ccb8e187e199b6ed7b52f",
+        "txHash": "0xee3b5153de9e16a925cc74c624b38a6f55cb5db566193ceac36bc9fdc25a7447"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975238422,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975238420,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xf77b0f26a679a49821e464f901ff5c543454e5a4777ccb8e187e199b6ed7b52f",
+        "txHash": "0xee3b5153de9e16a925cc74c624b38a6f55cb5db566193ceac36bc9fdc25a7447"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975238423,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975238421,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xf77b0f26a679a49821e464f901ff5c543454e5a4777ccb8e187e199b6ed7b52f",
+        "txHash": "0xee3b5153de9e16a925cc74c624b38a6f55cb5db566193ceac36bc9fdc25a7447"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975263441,
+    "deltaMs": 25018,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975263440,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975212,
+        "confidenceBps": 7970,
+        "txHash": "0xb2fbc875a2b5fc24b12192b8e3b8f3c0608813dc0b41a00a4ccc3186175aaa9e"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975268436,
+    "deltaMs": 4995,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975268435,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0x905b9653c02af49575f058fbd5eafbb7bde1f1de87c358bbb6412f5ae017d6ca",
+        "txHash": "0xcfccd751aae9df59fb9512b2fb42c90f7a93cc18e02ee5d375eda2a7cf6f8943"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975268436,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975268436,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0x905b9653c02af49575f058fbd5eafbb7bde1f1de87c358bbb6412f5ae017d6ca",
+        "txHash": "0xcfccd751aae9df59fb9512b2fb42c90f7a93cc18e02ee5d375eda2a7cf6f8943"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975268437,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975268437,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0x905b9653c02af49575f058fbd5eafbb7bde1f1de87c358bbb6412f5ae017d6ca",
+        "txHash": "0xcfccd751aae9df59fb9512b2fb42c90f7a93cc18e02ee5d375eda2a7cf6f8943"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975268438,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975268437,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0x905b9653c02af49575f058fbd5eafbb7bde1f1de87c358bbb6412f5ae017d6ca",
+        "txHash": "0xcfccd751aae9df59fb9512b2fb42c90f7a93cc18e02ee5d375eda2a7cf6f8943"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975269091,
+    "deltaMs": 653,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975269090,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "348000",
+        "latestValue": 41.376973603725475,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          }
+        ],
+        "timestamp": 1779975212
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975273410,
+    "deltaMs": 4319,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975273409,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xd715791fc3cfb313a357a7a10e1c395cbc07d1c77fb7d1311d4ef46295d0cea2",
+        "txHash": "0xf5eda82787b7116de18405acf7d58b4382fcb42139a5bc931d76a194ed483079"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975273410,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975273410,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xd715791fc3cfb313a357a7a10e1c395cbc07d1c77fb7d1311d4ef46295d0cea2",
+        "txHash": "0xf5eda82787b7116de18405acf7d58b4382fcb42139a5bc931d76a194ed483079"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975273411,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975273411,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xd715791fc3cfb313a357a7a10e1c395cbc07d1c77fb7d1311d4ef46295d0cea2",
+        "txHash": "0xf5eda82787b7116de18405acf7d58b4382fcb42139a5bc931d76a194ed483079"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975273412,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975273411,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xd715791fc3cfb313a357a7a10e1c395cbc07d1c77fb7d1311d4ef46295d0cea2",
+        "txHash": "0xf5eda82787b7116de18405acf7d58b4382fcb42139a5bc931d76a194ed483079"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975274080,
+    "deltaMs": 668,
+    "message": {
+      "type": "insurance.paid",
+      "timestamp": 1779975274080,
+      "payload": {
+        "type": "insurance.paid",
+        "policyId": "policy-001",
+        "policyholder": "0x487278a724cc0ecc64e2182761f5c15f30ef8aa6",
+        "amountUSDC": "10000000",
+        "txHash": "0x596756bf714fba7e8019bf7ea12432ca9cbafcca7bfd585dc92b251c8c111ff1",
+        "attestationIds": [
+          "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+          "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+          "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11"
+        ],
+        "timestamp": 1779975274
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975293654,
+    "deltaMs": 19574,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975293654,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975232,
+        "confidenceBps": 5928,
+        "txHash": "0xf6bca4a26a8254b0e876d53130984fff4959eba98f4479279994fcf6dc8b7a84"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975295924,
+    "deltaMs": 2270,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975295924,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "344000",
+        "latestValue": 41.56445972847397,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          }
+        ],
+        "timestamp": 1779975232
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975298478,
+    "deltaMs": 2554,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975298477,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975252,
+        "confidenceBps": 6638,
+        "txHash": "0x2f8ab9a9eb71cff2b3034cf0ab6899bd9b6cb712ea36d6e4c52ff096275ae9b0"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975303095,
+    "deltaMs": 4617,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975303095,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "344000",
+        "latestValue": 41.80769383547598,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          }
+        ],
+        "timestamp": 1779975252
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975303420,
+    "deltaMs": 325,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975303419,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xc138e1e8782ce3e4d3024100ae7d6e3443d3f7abc02215cdad9184a915ef81d5",
+        "txHash": "0x92408b32d60c7c50999365f758110a0ad2e61de331612b0513de26847f33b6b3"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975303420,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975303420,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xc138e1e8782ce3e4d3024100ae7d6e3443d3f7abc02215cdad9184a915ef81d5",
+        "txHash": "0x92408b32d60c7c50999365f758110a0ad2e61de331612b0513de26847f33b6b3"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975303421,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975303420,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xc138e1e8782ce3e4d3024100ae7d6e3443d3f7abc02215cdad9184a915ef81d5",
+        "txHash": "0x92408b32d60c7c50999365f758110a0ad2e61de331612b0513de26847f33b6b3"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975303421,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975303421,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xc138e1e8782ce3e4d3024100ae7d6e3443d3f7abc02215cdad9184a915ef81d5",
+        "txHash": "0x92408b32d60c7c50999365f758110a0ad2e61de331612b0513de26847f33b6b3"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975308419,
+    "deltaMs": 4998,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975308419,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "450000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0xe402a1200cbe3c561314d5916b8319039512258b6b037592139fe293530377b2"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975328480,
+    "deltaMs": 20061,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975328479,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "400000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0x4ddcff1574425c3d546b2ece3983d29e74a9605be384ace8ea19be8b97c09447"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975348449,
+    "deltaMs": 19969,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975348448,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0x2a9231adc3ccd9820a1aa6a3cabd6e8fc29b3f55d58d43a78aadb7ed7b9fbe41",
+        "txHash": "0x2f63c0cbebff7bf1448c492dac64bd8e0ef8daef82b34a1a3676acb597c0ea3e"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975348451,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975348450,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0x2a9231adc3ccd9820a1aa6a3cabd6e8fc29b3f55d58d43a78aadb7ed7b9fbe41",
+        "txHash": "0x2f63c0cbebff7bf1448c492dac64bd8e0ef8daef82b34a1a3676acb597c0ea3e"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975348451,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975348450,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0x2a9231adc3ccd9820a1aa6a3cabd6e8fc29b3f55d58d43a78aadb7ed7b9fbe41",
+        "txHash": "0x2f63c0cbebff7bf1448c492dac64bd8e0ef8daef82b34a1a3676acb597c0ea3e"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975348451,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975348451,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0x2a9231adc3ccd9820a1aa6a3cabd6e8fc29b3f55d58d43a78aadb7ed7b9fbe41",
+        "txHash": "0x2f63c0cbebff7bf1448c492dac64bd8e0ef8daef82b34a1a3676acb597c0ea3e"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975353444,
+    "deltaMs": 4993,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975353442,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975272,
+        "confidenceBps": 6327,
+        "txHash": "0xdd2f6461ce50f60ec3061e9add22b0e3f1655611118906a4fff4ebda416b4ddb"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975358298,
+    "deltaMs": 4854,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975358297,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "338000",
+        "latestValue": 41.64470591267214,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          },
+          {
+            "verifiedValue": 41.64470591267214,
+            "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+            "timestamp": 1779975272
+          }
+        ],
+        "timestamp": 1779975272
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975358428,
+    "deltaMs": 130,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975358428,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xb85253f26d6f9b6e18841f7c0da6a5faea900415a9ef4927c2b44e393a2ca4d6",
+        "txHash": "0x26759123ac964438cc3f3ae5037895ec992e4c3853e38f7b9a8ec2bda4db68b6"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975358429,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975358429,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xb85253f26d6f9b6e18841f7c0da6a5faea900415a9ef4927c2b44e393a2ca4d6",
+        "txHash": "0x26759123ac964438cc3f3ae5037895ec992e4c3853e38f7b9a8ec2bda4db68b6"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975358431,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975358430,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xb85253f26d6f9b6e18841f7c0da6a5faea900415a9ef4927c2b44e393a2ca4d6",
+        "txHash": "0x26759123ac964438cc3f3ae5037895ec992e4c3853e38f7b9a8ec2bda4db68b6"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975358432,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975358431,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xb85253f26d6f9b6e18841f7c0da6a5faea900415a9ef4927c2b44e393a2ca4d6",
+        "txHash": "0x26759123ac964438cc3f3ae5037895ec992e4c3853e38f7b9a8ec2bda4db68b6"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975363509,
+    "deltaMs": 5077,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975363509,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0x5bcd071a93c56866203b1224d9a380d647ec701a605b261aa4281be994193916",
+        "txHash": "0x546cd2aa10c9d6fb0a87a9f5911383f23b99cb86bb92304561096bc0a47ef75f"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975363510,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975363509,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0x5bcd071a93c56866203b1224d9a380d647ec701a605b261aa4281be994193916",
+        "txHash": "0x546cd2aa10c9d6fb0a87a9f5911383f23b99cb86bb92304561096bc0a47ef75f"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975363510,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975363510,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0x5bcd071a93c56866203b1224d9a380d647ec701a605b261aa4281be994193916",
+        "txHash": "0x546cd2aa10c9d6fb0a87a9f5911383f23b99cb86bb92304561096bc0a47ef75f"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975363511,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975363510,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0x5bcd071a93c56866203b1224d9a380d647ec701a605b261aa4281be994193916",
+        "txHash": "0x546cd2aa10c9d6fb0a87a9f5911383f23b99cb86bb92304561096bc0a47ef75f"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975368506,
+    "deltaMs": 4995,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975368505,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0xd315f027add78d3ac8f08676768f6cb96d339932340939657e6481f9edf06af3",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975292,
+        "confidenceBps": 6618,
+        "txHash": "0x0cfbbd0bdf3d77f61b1db73ab7e942e2b592da927e72278d2228ac217d2a1c99"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975373428,
+    "deltaMs": 4922,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975373428,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "350000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0x5c576dc49b44481654c8cb476ddb9a64ffdf925699bd1aee312d1d771b17b365"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975373586,
+    "deltaMs": 158,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975373585,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "336000",
+        "latestValue": 41.825185622192336,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          },
+          {
+            "verifiedValue": 41.64470591267214,
+            "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+            "timestamp": 1779975272
+          },
+          {
+            "verifiedValue": 41.825185622192336,
+            "attestationId": "0xd315f027add78d3ac8f08676768f6cb96d339932340939657e6481f9edf06af3",
+            "timestamp": 1779975292
+          }
+        ],
+        "timestamp": 1779975292
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975393421,
+    "deltaMs": 19835,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975393420,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0x3200f6cb4d5bc0791c7c29f69e7887520289df4ef4b92eda461f1d89fdfb1235",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975312,
+        "confidenceBps": 6995,
+        "txHash": "0xf791fd65f0a581ebc1b38d81f10077d7a28cfb58f39b1b38bd3e4ad74436c057"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975398226,
+    "deltaMs": 4805,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975398226,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "334000",
+        "latestValue": 41.52648786722159,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          },
+          {
+            "verifiedValue": 41.64470591267214,
+            "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+            "timestamp": 1779975272
+          },
+          {
+            "verifiedValue": 41.825185622192336,
+            "attestationId": "0xd315f027add78d3ac8f08676768f6cb96d339932340939657e6481f9edf06af3",
+            "timestamp": 1779975292
+          },
+          {
+            "verifiedValue": 41.52648786722159,
+            "attestationId": "0x3200f6cb4d5bc0791c7c29f69e7887520289df4ef4b92eda461f1d89fdfb1235",
+            "timestamp": 1779975312
+          }
+        ],
+        "timestamp": 1779975312
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975398519,
+    "deltaMs": 293,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975398518,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0x4ab4697276ee255518edee47fb2bc6084262131207ed58c037b447fc2a1bd1b6",
+        "txHash": "0x8172dd7d7fcad51e137ac43ec9d9369cccda6e9da6f7481c45a16b767819e134"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975398519,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975398519,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0x4ab4697276ee255518edee47fb2bc6084262131207ed58c037b447fc2a1bd1b6",
+        "txHash": "0x8172dd7d7fcad51e137ac43ec9d9369cccda6e9da6f7481c45a16b767819e134"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975398520,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975398519,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0x4ab4697276ee255518edee47fb2bc6084262131207ed58c037b447fc2a1bd1b6",
+        "txHash": "0x8172dd7d7fcad51e137ac43ec9d9369cccda6e9da6f7481c45a16b767819e134"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975398520,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975398520,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0x4ab4697276ee255518edee47fb2bc6084262131207ed58c037b447fc2a1bd1b6",
+        "txHash": "0x8172dd7d7fcad51e137ac43ec9d9369cccda6e9da6f7481c45a16b767819e134"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975403427,
+    "deltaMs": 4907,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975403427,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0xc4fc151e05dfa70ee05cb2b0cc979b5655c628e5401fe428ccda43d829df2f58",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975332,
+        "confidenceBps": 6846,
+        "txHash": "0x111eaa55a582fcdb292bf1c3586e2f7c15ce171799a6624ed83b464fab2bf768"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975408461,
+    "deltaMs": 5034,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975408461,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "300000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0x4ff9f1d16d300e6d859890a01746fb70b624d512373637874993733af7342f8d"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975411450,
+    "deltaMs": 2989,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975411450,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "334000",
+        "latestValue": 41.25348546382717,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          },
+          {
+            "verifiedValue": 41.64470591267214,
+            "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+            "timestamp": 1779975272
+          },
+          {
+            "verifiedValue": 41.825185622192336,
+            "attestationId": "0xd315f027add78d3ac8f08676768f6cb96d339932340939657e6481f9edf06af3",
+            "timestamp": 1779975292
+          },
+          {
+            "verifiedValue": 41.52648786722159,
+            "attestationId": "0x3200f6cb4d5bc0791c7c29f69e7887520289df4ef4b92eda461f1d89fdfb1235",
+            "timestamp": 1779975312
+          },
+          {
+            "verifiedValue": 41.25348546382717,
+            "attestationId": "0xc4fc151e05dfa70ee05cb2b0cc979b5655c628e5401fe428ccda43d829df2f58",
+            "timestamp": 1779975332
+          }
+        ],
+        "timestamp": 1779975332
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975428725,
+    "deltaMs": 17275,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975428724,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xe73def6eafa3cc6115d2013810007682bbb3187235266625ddda0aa5cddf5f25",
+        "txHash": "0xa8ffa600b37337c583f11be821dea439edee871e2863b36da630e097ac4e0d17"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975428725,
+    "deltaMs": 0,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975428725,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xe73def6eafa3cc6115d2013810007682bbb3187235266625ddda0aa5cddf5f25",
+        "txHash": "0xa8ffa600b37337c583f11be821dea439edee871e2863b36da630e097ac4e0d17"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975428726,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975428726,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xe73def6eafa3cc6115d2013810007682bbb3187235266625ddda0aa5cddf5f25",
+        "txHash": "0xa8ffa600b37337c583f11be821dea439edee871e2863b36da630e097ac4e0d17"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975428727,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975428727,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xe73def6eafa3cc6115d2013810007682bbb3187235266625ddda0aa5cddf5f25",
+        "txHash": "0xa8ffa600b37337c583f11be821dea439edee871e2863b36da630e097ac4e0d17"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975438468,
+    "deltaMs": 9741,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975438468,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "250000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0xdcde62ac85281fb68b1030f44452769cbcebb2a679debd0d56fef500c423e83a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975438470,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.slashed",
+      "timestamp": 1779975438469,
+      "payload": {
+        "type": "chain.slashed",
+        "sensorId": 3,
+        "amount": "2000000",
+        "remainingStake": "8000000",
+        "autoDeactivated": false,
+        "txHash": "0xdcde62ac85281fb68b1030f44452769cbcebb2a679debd0d56fef500c423e83a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975458578,
+    "deltaMs": 20108,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975458577,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 3,
+        "sensorWallet": "0x3Ef020Cf95aec4D4263Bad679c80aD072aE51811",
+        "amount": "200",
+        "queryId": "0xbae3b4acf86ccaa236290b0aabb3c2ec846051e59e455154e2114b483ceecfdf",
+        "txHash": "0x8a99944da6fb1ece17b7197ef6464a05e2def248dfae1f9a60c03d85a31dac7a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975458579,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975458578,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 2,
+        "sensorWallet": "0x0575913b7b3F2455fB82f4315aBB3BbE26CA87d9",
+        "amount": "200",
+        "queryId": "0xbae3b4acf86ccaa236290b0aabb3c2ec846051e59e455154e2114b483ceecfdf",
+        "txHash": "0x8a99944da6fb1ece17b7197ef6464a05e2def248dfae1f9a60c03d85a31dac7a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975458581,
+    "deltaMs": 2,
+    "message": {
+      "type": "chain.operator_paid",
+      "timestamp": 1779975458580,
+      "payload": {
+        "type": "chain.operator_paid",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "sensorId": 5,
+        "sensorWallet": "0x326f90c3f6E590E45A4f117Fb4d8693C084Ec73F",
+        "amount": "100",
+        "queryId": "0xbae3b4acf86ccaa236290b0aabb3c2ec846051e59e455154e2114b483ceecfdf",
+        "txHash": "0x8a99944da6fb1ece17b7197ef6464a05e2def248dfae1f9a60c03d85a31dac7a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975458582,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.protocol_fee",
+      "timestamp": 1779975458581,
+      "payload": {
+        "type": "chain.protocol_fee",
+        "customer": "0x861B70060adAc0dE6d32dc1d07Af00c2925E02aa",
+        "amount": "10",
+        "queryId": "0xbae3b4acf86ccaa236290b0aabb3c2ec846051e59e455154e2114b483ceecfdf",
+        "txHash": "0x8a99944da6fb1ece17b7197ef6464a05e2def248dfae1f9a60c03d85a31dac7a"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975463444,
+    "deltaMs": 4862,
+    "message": {
+      "type": "chain.attestation_posted",
+      "timestamp": 1779975463444,
+      "payload": {
+        "type": "chain.attestation_posted",
+        "attestationId": "0xc2d88c1efcd8668e483f346a412f674a9cbb5f6657f3a60de6c7b751031e6fe8",
+        "dataType": "weather.temperature_c",
+        "lat": 18.9,
+        "lon": -103.87,
+        "timestamp": 1779975352,
+        "confidenceBps": 5665,
+        "txHash": "0x0feac5310e43e8a3f1d478f3ef0a5d8c7d0a565ea2e87bf4f9a60af075380d16"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975465908,
+    "deltaMs": 2464,
+    "message": {
+      "type": "insurance.snapshot",
+      "timestamp": 1779975465908,
+      "payload": {
+        "type": "insurance.snapshot",
+        "policyId": "policy-001",
+        "status": "paid",
+        "premiumBalance": "328000",
+        "latestValue": 41.74751350036324,
+        "history": [
+          {
+            "verifiedValue": 26.640493571316345,
+            "attestationId": "0x1832b9f68505b40ec496751588e3c8a62495617af1500b619e31601a055fd977",
+            "timestamp": 1779975132
+          },
+          {
+            "verifiedValue": 26.58748948947142,
+            "attestationId": "0x71215e00c4f560fce007e51009f9d70098d644e2bb3f96dd8e7f596e3bc3a0c8",
+            "timestamp": 1779975152
+          },
+          {
+            "verifiedValue": 41.54000420192634,
+            "attestationId": "0x6512aa11961c55f2caefff2129ddd138163d62d34fd7ad7f7722bbd686d04ab2",
+            "timestamp": 1779975172
+          },
+          {
+            "verifiedValue": 41.73766944568146,
+            "attestationId": "0x74403ddbd8ba5d93f947851a7b5099ce029b8824a95d8cef66ef9504fd9bc629",
+            "timestamp": 1779975192
+          },
+          {
+            "verifiedValue": 41.376973603725475,
+            "attestationId": "0x89fbd5af051a7fd3fc59514665541e90e901db69e9c0b1fe86d37511bb0deb11",
+            "timestamp": 1779975212
+          },
+          {
+            "verifiedValue": 41.56445972847397,
+            "attestationId": "0x07db4e54926096bb3b2d38d7b0bee899d2a232c479d6d3136539672a371736cb",
+            "timestamp": 1779975232
+          },
+          {
+            "verifiedValue": 41.80769383547598,
+            "attestationId": "0xe05c60ab8496931055c0df84adf77a9b81d50808182aba4dde5db0a3357fa429",
+            "timestamp": 1779975252
+          },
+          {
+            "verifiedValue": 41.64470591267214,
+            "attestationId": "0x02c11795ec62679f347b2cc7d3046ce07e8c1aa96cae4c097e058c49e6f46c17",
+            "timestamp": 1779975272
+          },
+          {
+            "verifiedValue": 41.825185622192336,
+            "attestationId": "0xd315f027add78d3ac8f08676768f6cb96d339932340939657e6481f9edf06af3",
+            "timestamp": 1779975292
+          },
+          {
+            "verifiedValue": 41.52648786722159,
+            "attestationId": "0x3200f6cb4d5bc0791c7c29f69e7887520289df4ef4b92eda461f1d89fdfb1235",
+            "timestamp": 1779975312
+          },
+          {
+            "verifiedValue": 41.25348546382717,
+            "attestationId": "0xc4fc151e05dfa70ee05cb2b0cc979b5655c628e5401fe428ccda43d829df2f58",
+            "timestamp": 1779975332
+          },
+          {
+            "verifiedValue": 41.74751350036324,
+            "attestationId": "0xc2d88c1efcd8668e483f346a412f674a9cbb5f6657f3a60de6c7b751031e6fe8",
+            "timestamp": 1779975352
+          }
+        ],
+        "timestamp": 1779975352
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975468436,
+    "deltaMs": 2528,
+    "message": {
+      "type": "chain.reputation_updated",
+      "timestamp": 1779975468436,
+      "payload": {
+        "type": "chain.reputation_updated",
+        "sensorId": 3,
+        "newReputation": "200000000000000000",
+        "delta": "-50000000000000000",
+        "txHash": "0xa9eca4c06e1581216b11fff579e2290d0f41b31ed500664608934b88def38995"
+      }
+    }
+  },
+  {
+    "wallTimeMs": 1779975468437,
+    "deltaMs": 1,
+    "message": {
+      "type": "chain.slashed",
+      "timestamp": 1779975468437,
+      "payload": {
+        "type": "chain.slashed",
+        "sensorId": 3,
+        "amount": "2000000",
+        "remainingStake": "6000000",
+        "autoDeactivated": false,
+        "txHash": "0xa9eca4c06e1581216b11fff579e2290d0f41b31ed500664608934b88def38995"
+      }
+    }
+  }
+]
