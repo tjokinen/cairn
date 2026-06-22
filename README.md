@@ -1,6 +1,6 @@
 # Cairn
 
-Nanopayment oracle protocol for community-operated sensor networks. Built for the [Agentic Economy on Arc](https://arc.network) hackathon.
+Nanopayment oracle platform for community-operated sensor networks. Built for the [Agentic Economy on Arc](https://arc.network) hackathon.
 
 Sensor operators register data feeds, post a USDC stake, and serve readings via [x402](https://x402.org) endpoints. Customer agents — parametric insurance contracts, climate risk monitors, automated research agents — discover and purchase verified readings per-query, settled as USDC nanopayments on Arc.
 
