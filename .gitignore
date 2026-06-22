@@ -6,3 +6,7 @@ dist/
 contracts/out/
 contracts/cache/
 *.log
+API_SURVEY.md
+.DS_Store
+common/.DS_Store
+common/src/.DS_Store
