@@ -54,6 +54,12 @@ Operators receive 100% of their quoted rate. Cairn charges a 2% markup to the cu
 
 Each query collects signed readings from N sensors. The aggregator runs MAD (median absolute deviation) outlier detection: readings more than `2.5 × max(MAD, expectedVariance)` from the median are excluded. The verified value is the median of the accepted set. Outlier sensors receive a negative reputation delta on-chain; honest sensors receive a positive one. Sensors whose reputation falls below 0.30 are automatically slashed (2 USDC per slash) and deactivated if their remaining stake drops below 4 USDC.
 
+The on-chain `Attestation` stores only a hash of the underlying reading payload — the verified value itself is returned only to the paying customer in the API response. Smart contracts that need on-chain proof re-hash `(value, attestationId, salt)` and validate against the stored attestation. Free-riders cannot extract paid data from the chain.
+
+### Freshness and caching
+
+Each sensor declares a freshness window per data type (e.g. 60 seconds for weather). The aggregator caches verified values within that window and returns the same attestation to subsequent queries until the underlying data refreshes. Contributing sensors are paid per customer query — not per refresh — via batched nanopayment settlement at cache eviction, so 100 customer queries on a single cached reading produce 100 sensor-side payment obligations even though each upstream sensor is hit only once. Sensor load drops with caching; sensor revenue per query does not.
+
 ### Payment mechanics
 
 Every USDC movement uses **Circle Nanopayments via EIP-3009 Transfer With Authorization**. The payer signs an authorization; Circle validates off-chain and settles on-chain in batches. This makes per-query payments of $0.0001 economically viable — traditional rails (Stripe: $0.30 minimum, L1 gas: $1–5) are 3,000–50,000× the query value.
