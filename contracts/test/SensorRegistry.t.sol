@@ -53,7 +53,7 @@ contract SensorRegistryTest is Test {
 
     function test_Register_PullsStake() public {
         vm.prank(operator1);
-        reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
 
         assertEq(usdc.balanceOf(address(reg)), reg.STAKE_REQUIRED());
         assertEq(usdc.balanceOf(operator1),    0);
@@ -61,13 +61,13 @@ contract SensorRegistryTest is Test {
 
     function test_Register_AssignsSequentialIds() public {
         vm.prank(operator1);
-        uint256 id1 = reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        uint256 id1 = reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
 
         uint256 stake2 = reg.STAKE_REQUIRED();
         usdc.mint(operator2, stake2);
         vm.startPrank(operator2);
         usdc.approve(address(reg), stake2);
-        uint256 id2 = reg.register("http://op2:3002", weatherTypes, 19_240_000, -103_720_000, 200);
+        uint256 id2 = reg.register("http://op2:3002", "Op2", weatherTypes, 19_240_000, -103_720_000, 200);
         vm.stopPrank();
 
         assertEq(id1, 1);
@@ -77,7 +77,7 @@ contract SensorRegistryTest is Test {
 
     function test_Register_StoresFields() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
 
         (
             address wallet,
@@ -105,9 +105,9 @@ contract SensorRegistryTest is Test {
 
     function test_Register_EmitsEvent() public {
         vm.expectEmit(true, true, false, false);
-        emit SensorRegistry.SensorRegistered(1, operator1, "http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        emit SensorRegistry.SensorRegistered(1, operator1, "http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
         vm.prank(operator1);
-        reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
     }
 
     function test_Register_RevertsWithoutApproval() public {
@@ -116,20 +116,20 @@ contract SensorRegistryTest is Test {
         // No approve
         vm.prank(op3);
         vm.expectRevert();
-        reg.register("http://op3:3003", weatherTypes, 0, 0, 100);
+        reg.register("http://op3:3003", "Op3", weatherTypes, 0, 0, 100);
     }
 
     function test_Register_RevertsEmptyEndpoint() public {
         vm.prank(operator1);
         vm.expectRevert("SensorRegistry: empty endpoint");
-        reg.register("", weatherTypes, 0, 0, 100);
+        reg.register("", "Op1", weatherTypes, 0, 0, 100);
     }
 
     // ── getSensorsForType ─────────────────────────────────────────────────────
 
     function test_GetSensorsForType_SingleType() public {
         vm.prank(operator1);
-        reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
 
         uint256[] memory ids = reg.getSensorsForType(TEMP_TYPE);
         assertEq(ids.length, 1);
@@ -138,14 +138,14 @@ contract SensorRegistryTest is Test {
 
     function test_GetSensorsForType_MultipleOperators() public {
         vm.prank(operator1);
-        reg.register("http://op1:3001", weatherTypes, 18_900_000, -103_870_000, 100);
+        reg.register("http://op1:3001", "Op1", weatherTypes, 18_900_000, -103_870_000, 100);
 
         uint256 stake2 = reg.STAKE_REQUIRED();
         usdc.mint(operator2, stake2);
         vm.prank(operator2);
         usdc.approve(address(reg), stake2);
         vm.prank(operator2);
-        reg.register("http://op2:3002", weatherTypes, 19_240_000, -103_720_000, 200);
+        reg.register("http://op2:3002", "Op2", weatherTypes, 19_240_000, -103_720_000, 200);
 
         uint256[] memory ids = reg.getSensorsForType(TEMP_TYPE);
         assertEq(ids.length, 2);
@@ -155,7 +155,7 @@ contract SensorRegistryTest is Test {
 
     function test_GetSensorsForType_MultipleTypes() public {
         vm.prank(operator1);
-        reg.register("http://op1:3001", multiTypes, 18_900_000, -103_870_000, 100);
+        reg.register("http://op1:3001", "Op1", multiTypes, 18_900_000, -103_870_000, 100);
 
         assertEq(reg.getSensorsForType(TEMP_TYPE).length, 1);
         assertEq(reg.getSensorsForType(WIND_TYPE).length, 1);
@@ -171,7 +171,7 @@ contract SensorRegistryTest is Test {
 
     function test_Deactivate_ReturnsStake() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         vm.prank(operator1);
         reg.deactivate(id);
@@ -186,7 +186,7 @@ contract SensorRegistryTest is Test {
 
     function test_Deactivate_EmitsEvent() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         vm.expectEmit(true, false, false, false);
         emit SensorRegistry.SensorDeactivated(id);
@@ -196,7 +196,7 @@ contract SensorRegistryTest is Test {
 
     function test_Deactivate_RevertsIfNotOwner() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         vm.prank(operator2);
         vm.expectRevert("SensorRegistry: not owner");
@@ -207,7 +207,7 @@ contract SensorRegistryTest is Test {
 
     function test_UpdateReputation_PositiveDelta() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         // Reduce first so we have room to increase
         vm.prank(aggregator);
@@ -224,7 +224,7 @@ contract SensorRegistryTest is Test {
 
     function test_UpdateReputation_ClampsAtMaxOne() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         vm.prank(aggregator);
         reg.updateReputation(id, 1e18); // already at 1e18, can't exceed
@@ -235,7 +235,7 @@ contract SensorRegistryTest is Test {
 
     function test_UpdateReputation_ClampsAtZero() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         // Cache constants before setting prank to avoid staticcalls consuming vm.prank
         uint256 threshold = reg.SLASH_THRESHOLD();
@@ -254,7 +254,7 @@ contract SensorRegistryTest is Test {
 
     function test_UpdateReputation_RevertsIfNotAggregator() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         vm.prank(operator1);
         vm.expectRevert("SensorRegistry: !aggregator");
@@ -263,7 +263,7 @@ contract SensorRegistryTest is Test {
 
     function test_UpdateReputation_EmitsReputationUpdated() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         uint256 expectedRep = 1e18 - 1e16;
         vm.expectEmit(true, false, false, true);
@@ -276,7 +276,7 @@ contract SensorRegistryTest is Test {
 
     function test_Slash_FiresWhenBelowThreshold() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         // Drive reputation below SLASH_THRESHOLD (0.3e18) in one shot
         int256 delta = -(int256(1e18) - int256(reg.SLASH_THRESHOLD()) + 1e16);
@@ -292,7 +292,7 @@ contract SensorRegistryTest is Test {
 
     function test_Slash_ReducesStake() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         int256 delta = -(int256(1e18) - int256(reg.SLASH_THRESHOLD()) + 1e16);
         vm.prank(aggregator);
@@ -305,7 +305,7 @@ contract SensorRegistryTest is Test {
 
     function test_Slash_AutoDeactivatesWhenStakeTooLow() public {
         vm.prank(operator1);
-        uint256 id = reg.register("http://op1:3001", weatherTypes, 0, 0, 100);
+        uint256 id = reg.register("http://op1:3001", "Op1", weatherTypes, 0, 0, 100);
 
         // Slash repeatedly until stake < MIN_STAKE_ACTIVE
         // Each slash: -2 USDC. Need 10 - 4 = 6 USDC slashed = 3 slashes to reach 4 USDC (still active)

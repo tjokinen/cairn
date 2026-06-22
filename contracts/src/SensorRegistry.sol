@@ -16,6 +16,7 @@ contract SensorRegistry is Ownable {
     struct Sensor {
         address  wallet;
         string   endpointUrl;
+        string   name;          // operator-supplied display name
         bytes32[] dataTypes;
         int256   lat;           // × 1e6
         int256   lon;           // × 1e6
@@ -49,6 +50,7 @@ contract SensorRegistry is Ownable {
         uint256 indexed sensorId,
         address indexed wallet,
         string  endpointUrl,
+        string  name,
         bytes32[] dataTypes,
         int256  lat,
         int256  lon,
@@ -86,12 +88,14 @@ contract SensorRegistry is Ownable {
     /// @notice Register a new sensor. Caller must have approved STAKE_REQUIRED USDC to this contract.
     function register(
         string   calldata endpointUrl,
+        string   calldata name,
         bytes32[] calldata dataTypes,
         int256   lat,
         int256   lon,
         uint256  ratePerQuery
     ) external returns (uint256 sensorId) {
         require(bytes(endpointUrl).length > 0, "SensorRegistry: empty endpoint");
+        require(bytes(name).length > 0,        "SensorRegistry: empty name");
         require(dataTypes.length > 0,          "SensorRegistry: no dataTypes");
         require(ratePerQuery > 0,              "SensorRegistry: zero rate");
 
@@ -109,6 +113,7 @@ contract SensorRegistry is Ownable {
         sensors[sensorId] = Sensor({
             wallet:       msg.sender,
             endpointUrl:  endpointUrl,
+            name:         name,
             dataTypes:    dtCopy,
             lat:          lat,
             lon:          lon,
@@ -119,7 +124,7 @@ contract SensorRegistry is Ownable {
             active:       true
         });
 
-        emit SensorRegistered(sensorId, msg.sender, endpointUrl, dtCopy, lat, lon, ratePerQuery);
+        emit SensorRegistered(sensorId, msg.sender, endpointUrl, name, dtCopy, lat, lon, ratePerQuery);
     }
 
     /// @notice Deactivate own sensor and withdraw remaining stake.

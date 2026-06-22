@@ -15,10 +15,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ABI fragments — only what we need
 const USDC_APPROVE_SIG    = 'approve(address,uint256)';
-const REGISTRY_REGISTER_SIG = 'register(string,bytes32[],int256,int256,uint256)';
+const REGISTRY_REGISTER_SIG = 'register(string,string,bytes32[],int256,int256,uint256)';
 
 const SENSOR_REGISTERED_ABI = [
-  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
+  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, string name, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
 ];
 
 const STAKE_REQUIRED = 10_000_000n; // 10 USDC
@@ -98,6 +98,7 @@ export class RegistryClient {
       abiFunctionSignature: REGISTRY_REGISTER_SIG,
       abiParameters: [
         endpointUrl,
+        config.name,
         dataTypeBytes32,
         lat.toString(),
         lon.toString(),

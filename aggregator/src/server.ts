@@ -440,9 +440,22 @@ export function buildServer(
       bus.publish({ type: 'query.attestation_posted', attestationId });
     } catch (err) { console.error('postAttestation failed:', err); }
 
-    // ── Step 7: reputations (fire-and-forget) ────────────────────────────────
-    void applyReputationUpdates(result, chain);
-    void Promise.allSettled(readings.map((r) => chain.incrementQueryCount(r.sensorId).catch(console.error)));
+    // ── Step 7: reputations + query counts (background; serialized via chain mutex) ──
+    // Don't block the customer response on bookkeeping. The ChainClient mutex
+    // serializes the writes through the deployer EOA, so we order them
+    // explicitly here so errors surface and so the bookkeeping for one query
+    // completes before the next cycle's writes interleave.
+    void (async () => {
+      try {
+        await applyReputationUpdates(result, chain);
+        for (const r of readings) {
+          try { await chain.incrementQueryCount(r.sensorId); }
+          catch (err) { console.error(`incrementQueryCount(${r.sensorId}) failed:`, err); }
+        }
+      } catch (err) {
+        console.error('post-response bookkeeping failed:', err);
+      }
+    })();
 
     // ── Step 8: respond ──────────────────────────────────────────────────────
     const response = {

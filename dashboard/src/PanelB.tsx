@@ -1,7 +1,9 @@
 import React from 'react';
 import type { BusEvent } from './types';
 
-const ARC_EXPLORER = 'https://testnet.arcscan.app';
+const ARC_EXPLORER =
+  (import.meta as unknown as { env?: { VITE_ARC_EXPLORER?: string } }).env?.VITE_ARC_EXPLORER
+  ?? 'https://testnet.arcscan.app';
 
 function txHashOf(e: BusEvent): string | null {
   if ('txHash' in e && typeof e.txHash === 'string' && /^0x[0-9a-fA-F]{64}$/.test(e.txHash)) {

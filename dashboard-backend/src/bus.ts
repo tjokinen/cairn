@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 
 // On-chain events (from indexer.ts) — txHash is the originating Arc transaction.
 export type ChainEvent =
-  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string; txHash?: string }
+  | { type: 'chain.sensor_registered';    sensorId: number; wallet: string; endpointUrl: string; name: string; dataTypes: string[]; lat: number; lon: number; ratePerQuery: string; txHash?: string }
   | { type: 'chain.sensor_deactivated';   sensorId: number; txHash?: string }
   | { type: 'chain.reputation_updated';   sensorId: number; newReputation: string; delta: string; txHash?: string }
   | { type: 'chain.slashed';              sensorId: number; amount: string; remainingStake: string; autoDeactivated: boolean; txHash?: string }

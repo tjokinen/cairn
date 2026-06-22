@@ -9,7 +9,7 @@ import { bus } from './bus.js';
 // ── ABI fragments ─────────────────────────────────────────────────────────────
 
 const REGISTRY_ABI = [
-  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
+  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, string name, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
   'event SensorDeactivated(uint256 indexed sensorId)',
   'event ReputationUpdated(uint256 indexed sensorId, uint256 newReputation, int256 delta)',
   'event Slashed(uint256 indexed sensorId, uint256 amount, uint256 remainingStake, bool autoDeactivated)',
@@ -49,11 +49,11 @@ export class Indexer {
 
   async start(): Promise<void> {
     const latest = await this.provider.getBlockNumber();
+    const backfillFrom = Math.max(0, latest - 9000);
 
     // ── Backfill DataTypeRegistered (Arc caps eth_getLogs at 10,000 blocks) ─
     try {
-      const fromBlock = Math.max(0, latest - 9000);
-      const logs      = await this.datatype.queryFilter(this.datatype.filters['DataTypeRegistered'](), fromBlock, latest);
+      const logs = await this.datatype.queryFilter(this.datatype.filters['DataTypeRegistered'](), backfillFrom, latest);
       for (const log of logs) {
         const decoded = this.datatype.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!decoded) continue;
@@ -66,6 +66,29 @@ export class Indexer {
       }
     } catch (err) {
       console.warn('[Indexer] DataTypeRegistered backfill failed:', err);
+    }
+
+    // ── Backfill SensorRegistered so dashboard self-populates without static config ─
+    try {
+      const logs = await this.registry.queryFilter(this.registry.filters['SensorRegistered'](), backfillFrom, latest);
+      for (const log of logs) {
+        const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
+        if (!d) continue;
+        bus.publish({
+          type:         'chain.sensor_registered',
+          sensorId:     Number(d.args[0]),
+          wallet:       d.args[1] as string,
+          endpointUrl:  d.args[2] as string,
+          name:         d.args[3] as string,
+          dataTypes:    (d.args[4] as string[]).map((x) => ethers.decodeBytes32String(x)),
+          lat:          Number(d.args[5]) / 1e6,
+          lon:          Number(d.args[6]) / 1e6,
+          ratePerQuery: (d.args[7] as bigint).toString(),
+          txHash:       log.transactionHash,
+        });
+      }
+    } catch (err) {
+      console.warn('[Indexer] SensorRegistered backfill failed:', err);
     }
 
     // Arc does not support stateful filters (eth_newFilter / eth_getFilterChanges).
@@ -102,7 +125,7 @@ export class Indexer {
       for (const log of regLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });
         if (!d) continue;
-        bus.publish({ type: 'chain.sensor_registered', sensorId: Number(d.args[0]), wallet: d.args[1] as string, endpointUrl: d.args[2] as string, dataTypes: (d.args[3] as string[]).map((x) => ethers.decodeBytes32String(x)), lat: Number(d.args[4]) / 1e6, lon: Number(d.args[5]) / 1e6, ratePerQuery: (d.args[6] as bigint).toString(), txHash: log.transactionHash });
+        bus.publish({ type: 'chain.sensor_registered', sensorId: Number(d.args[0]), wallet: d.args[1] as string, endpointUrl: d.args[2] as string, name: d.args[3] as string, dataTypes: (d.args[4] as string[]).map((x) => ethers.decodeBytes32String(x)), lat: Number(d.args[5]) / 1e6, lon: Number(d.args[6]) / 1e6, ratePerQuery: (d.args[7] as bigint).toString(), txHash: log.transactionHash });
       }
       for (const log of deactLogs) {
         const d = this.registry.interface.parseLog({ topics: log.topics as string[], data: log.data });

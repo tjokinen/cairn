@@ -20,14 +20,8 @@ export async function applyReputationUpdates(
   result: VerificationResult,
   chain: ChainClient,
 ): Promise<void> {
-  // Demo flag: skip honest reputation bumps to reduce on-chain tx pressure
-  // (Arc testnet txpool fills quickly under 5+ parallel updates per cycle).
-  const skipHonest = process.env['AGGREGATOR_SKIP_HONEST_REP'] === 'true';
-
   const queue: Array<{ sensorId: number; delta: bigint; bucket: 'accepted' | 'outlier' }> = [];
-  if (!skipHonest) {
-    for (const r of result.accepted) queue.push({ sensorId: r.sensorId, delta: ACCEPTED_DELTA, bucket: 'accepted' });
-  }
+  for (const r of result.accepted) queue.push({ sensorId: r.sensorId, delta: ACCEPTED_DELTA, bucket: 'accepted' });
   for (const r of result.outliers) queue.push({ sensorId: r.sensorId, delta: OUTLIER_DELTA, bucket: 'outlier' });
 
   // Sequential: avoid flooding the mempool with concurrent txs from the same wallet.

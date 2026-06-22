@@ -1,20 +1,11 @@
 import type { AppState, BusEvent, SensorState, SlashEvent } from './types';
-import { STATIC_SENSORS } from './types';
 
 const MAX_TX_EVENTS = 200;
 let _eventId = 0;
 
-function initSensors(): Map<number, SensorState> {
-  const m = new Map<number, SensorState>();
-  for (const s of STATIC_SENSORS) {
-    m.set(s.sensorId, { ...s, reputation: 1.0, active: true, earnings: 0, queryCount: 0, repHistory: [1.0] });
-  }
-  return m;
-}
-
 export function initState(): AppState {
   return {
-    sensors:          initSensors(),
+    sensors:          new Map(),
     txEvents:         [],
     totalTxCount:     0,
     totalSettlements: 0,
@@ -56,7 +47,7 @@ export function reduce(state: AppState, event: BusEvent): AppState {
       const existing = sensors.get(event.sensorId);
       sensors.set(event.sensorId, {
         sensorId:     event.sensorId,
-        name:         existing?.name ?? `Sensor #${event.sensorId}`,
+        name:         event.name || existing?.name || `Sensor #${event.sensorId}`,
         wallet:       event.wallet,
         lat:          event.lat,
         lon:          event.lon,

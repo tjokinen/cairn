@@ -22,8 +22,9 @@ const REGISTRY_WRITE_ABI = [
 ];
 const REGISTRY_READ_ABI = [
   'function sensorCount() view returns (uint256)',
-  'function getSensor(uint256 sensorId) view returns (tuple(address wallet, string endpointUrl, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery, uint256 reputation, bool active, uint256 stakeAmount, uint256 queryCount))',
-  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
+  // Tuple field order must match the on-chain Sensor struct exactly.
+  'function getSensor(uint256 sensorId) view returns (tuple(address wallet, string endpointUrl, string name, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery, uint256 stakeAmount, uint256 reputation, uint256 totalQueries, bool active))',
+  'event SensorRegistered(uint256 indexed sensorId, address indexed wallet, string endpointUrl, string name, bytes32[] dataTypes, int256 lat, int256 lon, uint256 ratePerQuery)',
   'event SensorDeactivated(uint256 indexed sensorId)',
   'event ReputationUpdated(uint256 indexed sensorId, uint256 newReputation, int256 delta)',
   'event Slashed(uint256 indexed sensorId, uint256 amount, uint256 remainingStake, bool autoDeactivated)',

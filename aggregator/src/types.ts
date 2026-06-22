@@ -2,6 +2,7 @@ export interface SensorInfo {
   sensorId:     number;
   wallet:       string;
   endpointUrl:  string;
+  name:         string;     // operator-supplied display name
   dataTypes:    string[];   // decoded from bytes32
   lat:          number;     // degrees (divided by 1e6 from chain)
   lon:          number;
