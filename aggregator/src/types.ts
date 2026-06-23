@@ -12,13 +12,14 @@ export interface SensorInfo {
 }
 
 export interface SensorReading {
-  sensorId:     number;
-  sensorWallet: string;
-  value:        number;
-  timestamp:    number;
-  signature:    string;
-  dataType:     string;
-  unit:         string;
+  sensorId:         number;
+  sensorWallet:     string;
+  value:            number;
+  timestamp:        number;
+  signature:        string;
+  dataType:         string;
+  unit:             string;
+  freshnessSeconds: number;   // sensor-declared validity window; cache TTL = min across contributors
 }
 
 export interface QueryContext {

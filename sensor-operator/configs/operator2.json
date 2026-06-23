@@ -9,6 +9,7 @@
     "weather.wind_ms"
   ],
   "ratePerQuery": 200,
+  "freshnessSeconds": 60,
   "accuracy": { "noiseStddev": 0.5, "biasOffset": 0 },
   "port": 3002,
   "adminEnabled": true

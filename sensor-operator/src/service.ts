@@ -170,13 +170,14 @@ async function main() {
   // GET /info — public
   app.get('/info', (_req, res) => {
     res.json({
-      name:         config.name,
+      name:             config.name,
       sensorId,
-      location:     config.location,
-      dataTypes:    config.dataTypes,
-      ratePerQuery: config.ratePerQuery,
+      location:         config.location,
+      dataTypes:        config.dataTypes,
+      ratePerQuery:     config.ratePerQuery,
+      freshnessSeconds: config.freshnessSeconds,
       walletAddress,
-      active:       true,
+      active:           true,
     });
   });
 
@@ -256,9 +257,12 @@ async function main() {
         sensorId,
         dataType,
         value,
-        unit:      getUnit(dataType),
+        unit:             getUnit(dataType),
         timestamp,
         signature,
+        // Tells the aggregator how long this reading is valid for caching.
+        // The cache TTL = min(freshnessSeconds across contributing sensors).
+        freshnessSeconds: config.freshnessSeconds,
       });
     } catch (err) {
       console.error('Failed to sign reading:', err);

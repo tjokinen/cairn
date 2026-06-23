@@ -6,6 +6,9 @@ import { DiscoveryService } from './discovery.js';
 import { ChainClient }      from './chain.js';
 import { LocalFacilitatorClient } from './facilitator.js';
 import { buildServer }      from './server.js';
+import { ReadingCache }     from './cache.js';
+import type { CacheEntry }  from './cache.js';
+import { bus }              from './bus.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -34,7 +37,39 @@ async function main() {
   await facilitator.init();
   await discovery.load();
 
-  buildServer(deployments, discovery, chain, facilitator, aggregatorWalletId, aggregatorAddress, aggregatorPort);
+  // ── Reading cache + sensor payout settlement ──────────────────────────────
+  // Aggregates per-sensor totals across all evicted entries and settles via
+  // a single Circle USDC transfer per sensor wallet.
+  const payoutCallback = async (entries: CacheEntry[]): Promise<void> => {
+    const totals = new Map<string, { wallet: string; amount: number; sensorIds: Set<number>; hitCount: number }>();
+    for (const entry of entries) {
+      for (const sensor of entry.attribution) {
+        const existing = totals.get(sensor.sensorWallet) ?? {
+          wallet: sensor.sensorWallet, amount: 0, sensorIds: new Set<number>(), hitCount: 0,
+        };
+        existing.amount   += sensor.ratePerQuery * entry.hitCount;
+        existing.hitCount += entry.hitCount;
+        existing.sensorIds.add(sensor.sensorId);
+        totals.set(sensor.sensorWallet, existing);
+      }
+    }
+
+    for (const { wallet, amount, sensorIds, hitCount } of totals.values()) {
+      if (amount <= 0) continue;
+      const txHash = await chain.transferUsdc(wallet, amount);
+      const sensorIdsArr = [...sensorIds];
+      console.log(`[cache] paid ${(amount / 1e6).toFixed(6)} USDC to ${wallet} for ${hitCount} cache hits (sensorIds=${sensorIdsArr.join(',')}, tx=${txHash})`);
+      for (const sensorId of sensorIdsArr) {
+        bus.publish({ type: 'query.sensor_payment', sensorId, wallet, amount: amount / sensorIdsArr.length, txHash });
+      }
+    }
+  };
+
+  const cachePersistPath = resolve(REPO_ROOT, 'aggregator', 'state', 'reading-cache.json');
+  const readingCache = new ReadingCache(payoutCallback, cachePersistPath);
+  await readingCache.start();
+
+  buildServer(deployments, discovery, chain, facilitator, readingCache, aggregatorWalletId, aggregatorAddress, aggregatorPort);
 }
 
 main().catch((err) => {

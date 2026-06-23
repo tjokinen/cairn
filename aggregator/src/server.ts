@@ -18,6 +18,8 @@ import { verify as verifyReadings }      from './verification.js';
 import { applyReputationUpdates }        from './reputation.js';
 import { postAttestation, canonicalizeReadings } from './attestation.js';
 import { bus }                           from './bus.js';
+import { makeCacheKey }                  from './cache.js';
+import type { ReadingCache }             from './cache.js';
 import type { QueryContext, SensorReading } from './types.js';
 
 const PROTOCOL_FEE_BPS = 200; // 2%
@@ -227,6 +229,7 @@ export function buildServer(
   discovery:           DiscoveryService,
   chain:               ChainClient,
   facilitator:         LocalFacilitatorClient,
+  readingCache:        ReadingCache,
   aggregatorWalletId:  string,
   aggregatorAddress:   string,
   aggregatorPort:      number,
@@ -336,6 +339,59 @@ export function buildServer(
 
     bus.publish({ type: 'query.received', customer, params: { dataType, lat, lon, radiusKm, quorum }, selectedSensorIds: selectedSensors.map((s) => s.sensorId) });
 
+    // ── Cache check ──────────────────────────────────────────────────────────
+    // Within the contributing sensors' freshness window, equivalent queries
+    // return the cached attestation. Sensors are still paid per cache hit —
+    // payouts are queued in the cache entry and settled in batch at eviction.
+    const readingCacheKey = makeCacheKey(dataType, lat, lon, radiusKm, quorum);
+    const cached = readingCache.get(readingCacheKey);
+    if (cached) {
+      const cachedBasePrice = cached.attribution.reduce((s, a) => s + a.ratePerQuery, 0);
+      const protocolFee     = Math.max(0, customerPrice - cachedBasePrice);
+
+      // Treasury transfer + on-chain recordQuery in background so the cache hit
+      // returns fast. ChainClient's mutex serializes the writes through the
+      // deployer EOA.
+      void (async () => {
+        if (protocolFee > 0) {
+          try {
+            const txHash = await chain.transferUsdc(deployments.wallets.treasury.address, protocolFee);
+            bus.publish({ type: 'query.fee_forwarded', amount: protocolFee, txHash });
+          } catch (err) { console.error('Cache-hit protocol fee failed:', err); }
+        }
+        try {
+          await chain.recordQuery(
+            customer,
+            cached.attribution.map((a) => a.sensorId),
+            cached.attribution.map((a) => a.sensorWallet),
+            cached.attribution.map((a) => a.ratePerQuery),
+            protocolFee,
+            queryId,
+          );
+        } catch (err) { console.error('Cache-hit recordQuery failed:', err); }
+      })();
+
+      const response = {
+        verifiedValue:        cached.attestation.verifiedValue,
+        dataType:             cached.attestation.dataType,
+        unit:                 cached.attestation.unit,
+        timestamp:            cached.attestation.timestamp,
+        attestationId:        cached.attestation.attestationId,
+        contributingSensors:  cached.attestation.contributingSensors,
+        excludedSensors:      cached.attestation.excludedSensors,
+        readings:             cached.attestation.readings,
+        confidence:           cached.attestation.confidenceBps / 10000,
+        totalPaidUSDC:        (customerPrice    / 1e6).toFixed(6),
+        operatorEarningsUSDC: (cachedBasePrice / 1e6).toFixed(6),
+        protocolFeeUSDC:      (protocolFee     / 1e6).toFixed(6),
+        queryId,
+        cacheHit:             true,
+      };
+      bus.publish({ type: 'query.completed', response });
+      res.json(response);
+      return;
+    }
+
     // ── Step 2: collect readings ──────────────────────────────────────────────
     const readings: SensorReading[] = [];
     const payments: { sensorId: number; wallet: string; amount: number; txHash: string }[] = [];
@@ -352,7 +408,7 @@ export function buildServer(
             requirementOrder = selectRequirementsForAggregator(candidates, arcNetwork);
           } else if (probe.status === 200) {
             const d = probe.data;
-            readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string });
+            readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string, freshnessSeconds: (d['freshnessSeconds'] as number | undefined) ?? 60 });
             return;
           }
         } catch { /* probe failed — try direct request */ }
@@ -377,7 +433,7 @@ export function buildServer(
               }
 
               const d = paidResp.data;
-              readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string });
+              readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string, freshnessSeconds: (d['freshnessSeconds'] as number | undefined) ?? 60 });
 
               // x402 settlement already paid the operator; record the settlement reference.
               const txHash = extractSettlementTransaction(paidResp.headers as unknown as Record<string, unknown>);
@@ -396,7 +452,7 @@ export function buildServer(
         if (resp.status !== 200) { console.warn(`Sensor ${sensor.sensorId}: ${resp.status}`); return; }
 
         const d = resp.data;
-        readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string });
+        readings.push({ sensorId: sensor.sensorId, sensorWallet: sensor.wallet, value: d['value'] as number, timestamp: d['timestamp'] as number, signature: d['signature'] as string, dataType, unit: d['unit'] as string, freshnessSeconds: (d['freshnessSeconds'] as number | undefined) ?? 60 });
 
       } catch (err) {
         console.error(`Sensor ${sensor.sensorId} failed:`, err);
@@ -464,6 +520,37 @@ export function buildServer(
       sensorId: r.sensorId, sensorWallet: r.sensorWallet, value: r.value,
       timestamp: r.timestamp, signature: r.signature,
     })));
+
+    // Cache the verified attestation so subsequent equivalent queries serve from
+    // memory until the freshness window elapses. Attribution = the sensors whose
+    // readings survived MAD (post-verification); only those get paid per cache hit.
+    if (attestationId && result.accepted.length > 0) {
+      const acceptedIds  = new Set(result.accepted.map((r) => r.sensorId));
+      const contributing = selectedSensors.filter((s) => acceptedIds.has(s.sensorId));
+      if (contributing.length > 0) {
+        const freshnessSeconds = Math.min(...readings
+          .filter((r) => acceptedIds.has(r.sensorId))
+          .map((r) => r.freshnessSeconds));
+        readingCache.set(
+          readingCacheKey,
+          {
+            attestationId,
+            verifiedValue:       result.verifiedValue,
+            unit:                readings[0]?.unit ?? meta.unit,
+            dataType,
+            timestamp,
+            confidenceBps:       result.confidenceBps,
+            contributingSensors: result.accepted.map((r) => r.sensorId),
+            excludedSensors:     [...result.outliers, ...result.malformed].map((r) => r.sensorId),
+            readings:            canonicalReadings,
+            queryId,
+          },
+          contributing.map((s) => ({ sensorId: s.sensorId, sensorWallet: s.wallet, ratePerQuery: s.ratePerQuery })),
+          freshnessSeconds,
+        );
+      }
+    }
+
     const response = {
       verifiedValue:        result.verifiedValue,
       dataType, unit: readings[0]?.unit ?? meta.unit, timestamp, attestationId,
@@ -475,6 +562,7 @@ export function buildServer(
       operatorEarningsUSDC: (actualBase    / 1e6).toFixed(6),
       protocolFeeUSDC:      (protocolFee   / 1e6).toFixed(6),
       queryId,
+      cacheHit:             false,
     };
     bus.publish({ type: 'query.completed', response });
     res.json(response);

@@ -11,6 +11,7 @@
     "air.pm10_ugm3"
   ],
   "ratePerQuery": 200,
+  "freshnessSeconds": 60,
   "accuracy": { "noiseStddev": 0.3, "biasOffset": 0 },
   "port": 3004,
   "adminEnabled": true
