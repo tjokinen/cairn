@@ -16,7 +16,7 @@ import type { ChainClient }      from './chain.js';
 import type { LocalFacilitatorClient } from './facilitator.js';
 import { verify as verifyReadings }      from './verification.js';
 import { applyReputationUpdates }        from './reputation.js';
-import { postAttestation } from './attestation.js';
+import { postAttestation, canonicalizeReadings } from './attestation.js';
 import { bus }                           from './bus.js';
 import type { QueryContext, SensorReading } from './types.js';
 
@@ -458,11 +458,18 @@ export function buildServer(
     })();
 
     // ── Step 8: respond ──────────────────────────────────────────────────────
+    // verifiedValue + readings let the customer recompute payloadHash and validate
+    // it against the on-chain Attestation (since verifiedValue is not stored on-chain).
+    const canonicalReadings = canonicalizeReadings(readings.map((r) => ({
+      sensorId: r.sensorId, sensorWallet: r.sensorWallet, value: r.value,
+      timestamp: r.timestamp, signature: r.signature,
+    })));
     const response = {
       verifiedValue:        result.verifiedValue,
       dataType, unit: readings[0]?.unit ?? meta.unit, timestamp, attestationId,
       contributingSensors:  result.accepted.map((r) => r.sensorId),
       excludedSensors:      [...result.outliers, ...result.malformed].map((r) => r.sensorId),
+      readings:             canonicalReadings,
       confidence:           result.confidenceBps / 10000,
       totalPaidUSDC:        (customerPrice / 1e6).toFixed(6),
       operatorEarningsUSDC: (actualBase    / 1e6).toFixed(6),

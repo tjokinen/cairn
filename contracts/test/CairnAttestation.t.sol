@@ -29,9 +29,8 @@ contract CairnAttestationTest is Test {
             timestamp:            1_700_000_000,
             contributingSensors:  contributing,
             excludedSensors:      excluded,
-            verifiedValue:        28_150_000, // 28.15 × 1e6
             confidenceBps:        7500,
-            payloadHash:          keccak256("readings+sigs")
+            payloadHash:          keccak256(abi.encodePacked(int256(28_150_000), "readings+sigs"))
         });
     }
 
@@ -76,7 +75,6 @@ contract CairnAttestationTest is Test {
         assertEq(stored.lat,             a.lat);
         assertEq(stored.lon,             a.lon);
         assertEq(stored.timestamp,       a.timestamp);
-        assertEq(stored.verifiedValue,   a.verifiedValue);
         assertEq(stored.confidenceBps,   a.confidenceBps);
         assertEq(stored.payloadHash,     a.payloadHash);
         assertEq(stored.contributingSensors.length, 2);

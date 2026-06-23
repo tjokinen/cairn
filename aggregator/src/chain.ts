@@ -32,8 +32,11 @@ const REGISTRY_READ_ABI = [
 const AGGREGATOR_WRITE_ABI = [
   'function recordQuery(address customer, uint256[] calldata sensorIds, address[] calldata sensorWallets, uint256[] calldata operatorAmounts, uint256 protocolFeeAmount, bytes32 queryId) external',
 ];
+// Attestation tuple fields (matching CairnAttestation.sol):
+// dataType, lat, lon, timestamp, contributingSensors, excludedSensors, confidenceBps, payloadHash
+// verifiedValue is NOT on-chain — payloadHash commits to it instead.
 const ATTESTATION_WRITE_ABI = [
-  'function postAttestation((bytes32,int256,int256,uint256,uint256[],uint256[],int256,uint256,bytes32)) external',
+  'function postAttestation((bytes32,int256,int256,uint256,uint256[],uint256[],uint256,bytes32)) external',
   'event AttestationPosted(bytes32 indexed attestationId, bytes32 indexed dataType, int256 lat, int256 lon, uint256 timestamp, uint256 confidenceBps)',
 ];
 const DATATYPE_ABI = [
@@ -47,9 +50,8 @@ export interface AttestationParams {
   timestamp:            number;
   contributingSensors:  number[];
   excludedSensors:      number[];
-  verifiedValue:        number;
   confidenceBps:        number;
-  payloadHash:          string;
+  payloadHash:          string;  // commits to verifiedValue + raw readings; see attestation.ts
 }
 
 export class ChainClient {
@@ -196,9 +198,8 @@ export class ChainClient {
   async postAttestation(p: AttestationParams): Promise<string> {
     return this.serialize(async () => {
       const dataTypeBytes32 = ethers.encodeBytes32String(p.dataType);
-      const lat   = Math.round(p.lat * 1e6);
-      const lon   = Math.round(p.lon * 1e6);
-      const value = Math.round(p.verifiedValue * 1_000_000);
+      const lat = Math.round(p.lat * 1e6);
+      const lon = Math.round(p.lon * 1e6);
 
       const tx = await this.attestationWriter.postAttestation([
         dataTypeBytes32,
@@ -207,7 +208,6 @@ export class ChainClient {
         p.timestamp,
         p.contributingSensors,
         p.excludedSensors,
-        value,
         p.confidenceBps,
         p.payloadHash,
       ]);

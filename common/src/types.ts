@@ -47,5 +47,4 @@ export interface VerificationResult {
   outliers: Reading[];
   malformed: Reading[];
   confidenceBps: number;
-  payloadHash: string;
 }

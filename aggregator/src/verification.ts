@@ -1,6 +1,11 @@
 import { ethers } from 'ethers';
 import type { Reading, DataTypeMetadata, VerificationResult } from '@cairn/common';
 
+// The payloadHash that binds this verification result to its raw evidence is
+// computed in attestation.ts (it requires the verifiedValue, which only exists
+// once verify() returns). VerificationResult therefore does NOT carry a hash —
+// the on-chain commitment is built downstream.
+
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -49,14 +54,12 @@ export function verify(
   }
 
   if (valid.length < 2) {
-    const payloadHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(readings)));
     return {
       verifiedValue: valid.length === 1 ? valid[0].value : 0,
       accepted: valid,
       outliers: [],
       malformed,
       confidenceBps: 0,
-      payloadHash,
     };
   }
 
@@ -73,10 +76,8 @@ export function verify(
     else accepted.push(r);
   }
 
-  const payloadHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(readings)));
-
   if (accepted.length < 2) {
-    return { verifiedValue: accepted[0]?.value ?? m, accepted, outliers, malformed, confidenceBps: 0, payloadHash };
+    return { verifiedValue: accepted[0]?.value ?? m, accepted, outliers, malformed, confidenceBps: 0 };
   }
 
   // Step 3 — verified value + confidence
@@ -88,5 +89,5 @@ export function verify(
     3000 + 2000 * (accepted.length - 1) + Math.round(2000 * spreadFactor),
   ));
 
-  return { verifiedValue, accepted, outliers, malformed, confidenceBps, payloadHash };
+  return { verifiedValue, accepted, outliers, malformed, confidenceBps };
 }

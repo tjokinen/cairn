@@ -5,6 +5,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @notice Immutable on-chain record of every verification result produced by the aggregator.
 contract CairnAttestation is Ownable {
+    /// @dev `verifiedValue` is intentionally NOT stored on-chain. Storing it would let
+    /// non-paying observers read paid data from the chain (`getAttestation`). Instead
+    /// `payloadHash` cryptographically commits to the value + raw readings; the value
+    /// itself is returned only to the paying customer via the aggregator API response.
+    /// Smart contracts that need on-chain proof re-derive the hash from a customer-supplied
+    /// (value, readings) tuple and compare against `payloadHash`.
     struct Attestation {
         bytes32   dataType;
         int256    lat;                  // × 1e6
@@ -12,9 +18,8 @@ contract CairnAttestation is Ownable {
         uint256   timestamp;
         uint256[] contributingSensors;
         uint256[] excludedSensors;
-        int256    verifiedValue;        // × 1e6
         uint256   confidenceBps;        // 0–10000
-        bytes32   payloadHash;          // keccak256 of canonicalized readings + signatures
+        bytes32   payloadHash;          // keccak256(verifiedValue || canonical readings + signatures)
     }
 
     address public aggregatorService;
